@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App de Patrones Rítmicos v3.0</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useRef, useEffect } = React;
+
+        // Componente de iconos de Lucide (simplificados)
+        const Download = ({ size = 20 }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+            </svg>
+        );
+
+        const Play = ({ size = 20 }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>
+        );
+
+        const Square = ({ size = 20 }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            </svg>
+        );
+
+        const ArrowLeft = ({ size = 20 }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="19" y1="12" x2="5" y2="12"/>
+                <polyline points="12 19 5 12 12 5"/>
+            </svg>
+        );
+
+        const StrummingPatternApp = () => {
+          const [screen, setScreen] = useState(1);
+          const [config, setConfig] = useState({
+            title: '',
+            showTitle: true,
+            numBars: 1,
+            chordsPerBar: 1,
+            bpm: 50,
+            allDownstrokes: false,
+            corcheas: false // toggle global: muestra "y" bajo todos los up-arrows
+          });
+          
+          const [bars, setBars] = useState([]);
+          const [isPlaying, setIsPlaying] = useState(false);
+          const [rasgueoEnabled, setRasgueoEnabled] = useState(false);
+          const [preCountEnabled, setPreCountEnabled] = useState(false);
+          const [currentArrow, setCurrentArrow] = useState({ bar: -1, arrow: -1 });
+          const intervalRef = useRef(null);
+          const audioContextRef = useRef(null);
+          const exportRef = useRef(null);
+
+          useEffect(() => {
+            if (screen === 2 && bars.length === 0) {
+              initializeBars();
+            }
+          }, [screen]);
+
+          const initializeBars = () => {
+            const newBars = Array(config.numBars).fill(null).map(() => ({
+              chords: Array(config.chordsPerBar).fill({ value: '', position: 0 }),
+              arrows: Array(8).fill(0)
+            }));
+            setBars(newBars);
+          };
+
+          const getChordPositions = () => {
+            if (config.chordsPerBar === 1) return [0];
+            if (config.chordsPerBar === 2) return [0, 4];
+            return [0, 2, 4, 6];
+          };
+
+          const handleContinue = () => {
+            if (config.numBars && config.chordsPerBar) {
+              setScreen(2);
+            }
+          };
+
+          const toggleArrow = (barIndex, arrowIndex) => {
+            const newBars = [...bars];
+            const currentState = newBars[barIndex].arrows[arrowIndex];
+            newBars[barIndex].arrows[arrowIndex] = (currentState + 1) % 3;
+            setBars(newBars);
+          };
+
+          const setChord = (barIndex, chordIndex, value) => {
+            const newBars = [...bars];
+            const positions = getChordPositions();
+            
+            if (value === 'N/A') {
+              newBars[barIndex].chords[chordIndex] = { 
+                value: null, 
+                position: positions[chordIndex] 
+              };
+            } else {
+              newBars[barIndex].chords[chordIndex] = { 
+                value: value, 
+                position: positions[chordIndex] 
+              };
+            }
+            
+            setBars(newBars);
+          };
+
+          const playMetronome = () => {
+            if (!audioContextRef.current) {
+              audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            const beatsPerBar = 8;
+            const soundIntervalMs = (60000 / config.bpm) / 2;
+            const arrowIntervalMs = soundIntervalMs / 2;
+
+            setIsPlaying(true);
+            
+            const playSound = (count, isDownbeat = false) => {
+              const ctx = audioContextRef.current;
+              const oscillator = ctx.createOscillator();
+              const gainNode = ctx.createGain();
+
+              oscillator.connect(gainNode);
+              gainNode.connect(ctx.destination);
+
+              // 4 semitonos más alto en el 1er tiempo: 800 × 2^(4/12) ≈ 1008 Hz
+              oscillator.frequency.value = isDownbeat ? 800 * Math.pow(2, 4 / 12) : 800;
+              gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+              
+              oscillator.type = 'square';
+              gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+
+              oscillator.start(ctx.currentTime);
+              oscillator.stop(ctx.currentTime + 0.1);
+            };
+
+            const playSnare = () => {
+              const ctx = audioContextRef.current;
+              
+              const bufferSize = ctx.sampleRate * 0.1;
+              const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+              const output = buffer.getChannelData(0);
+              
+              for (let i = 0; i < bufferSize; i++) {
+                output[i] = Math.random() * 2 - 1;
+              }
+              
+              const noise = ctx.createBufferSource();
+              noise.buffer = buffer;
+              
+              const noiseFilter = ctx.createBiquadFilter();
+              noiseFilter.type = 'highpass';
+              noiseFilter.frequency.value = 1000;
+              
+              const noiseGain = ctx.createGain();
+              noiseGain.gain.setValueAtTime(0.3, ctx.currentTime);
+              noiseGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+              
+              noise.connect(noiseFilter);
+              noiseFilter.connect(noiseGain);
+              noiseGain.connect(ctx.destination);
+              
+              noise.start(ctx.currentTime);
+              noise.stop(ctx.currentTime + 0.1);
+            };
+
+            if (preCountEnabled) {
+              let preCount = 1;
+              
+              playSound(-1);
+              
+              const preCountInterval = setInterval(() => {
+                if (preCount < 4) {
+                  playSound(-1);
+                  preCount++;
+                } else {
+                  clearInterval(preCountInterval);
+                  startMainMetronome();
+                }
+              }, soundIntervalMs);
+            } else {
+              startMainMetronome();
+            }
+
+            function startMainMetronome() {
+              let totalBeatCount = 0;
+              
+              setCurrentArrow({ bar: 0, arrow: 0 });
+              playSound(totalBeatCount, true); // primer tiempo = downbeat
+              
+              if (rasgueoEnabled && bars[0] && bars[0].arrows[0] === 1) {
+                playSnare();
+              }
+              
+              totalBeatCount++;
+
+              const soundInterval = setInterval(() => {
+                // 1 compás = beatsPerBar arrows = beatsPerBar/2 sound-ticks
+                // (arrows avanzan al doble de velocidad que los sonidos)
+                const isDownbeat = totalBeatCount % (beatsPerBar / 2) === 0;
+                playSound(totalBeatCount, isDownbeat);
+                totalBeatCount++;
+              }, soundIntervalMs);
+
+              let arrowCount = 1;
+              const arrowInterval = setInterval(() => {
+                const currentBar = Math.floor(arrowCount / beatsPerBar) % config.numBars;
+                const currentArrowInBar = arrowCount % beatsPerBar;
+                
+                setCurrentArrow({ bar: currentBar, arrow: currentArrowInBar });
+                
+                if (rasgueoEnabled && bars[currentBar] && bars[currentBar].arrows[currentArrowInBar] === 1) {
+                  playSnare();
+                }
+                
+                arrowCount++;
+              }, arrowIntervalMs);
+
+              intervalRef.current = { sound: soundInterval, arrow: arrowInterval };
+            }
+          };
+
+          const stopMetronome = () => {
+            if (intervalRef.current) {
+              if (intervalRef.current.sound) clearInterval(intervalRef.current.sound);
+              if (intervalRef.current.arrow) clearInterval(intervalRef.current.arrow);
+              intervalRef.current = null;
+            }
+            setIsPlaying(false);
+            setCurrentArrow({ bar: -1, arrow: -1 });
+          };
+
+          const saveConfiguration = () => {
+            try {
+              const configData = {
+                version: '3.0',
+                config: config,
+                bars: bars,
+                rasgueoEnabled: rasgueoEnabled,
+                preCountEnabled: preCountEnabled
+              };
+
+              const dataStr = JSON.stringify(configData, null, 2);
+              const blob = new Blob([dataStr], { type: 'application/json' });
+              const url = URL.createObjectURL(blob);
+              const link = document.createElement('a');
+              link.download = `${config.title || 'patron'}.rhythm`;
+              link.href = url;
+              
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+              
+              setTimeout(() => URL.revokeObjectURL(url), 100);
+            } catch (error) {
+              console.error('Error al guardar:', error);
+            }
+          };
+
+          const loadConfiguration = (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              try {
+                const data = JSON.parse(e.target.result);
+                if (data.config && data.bars) {
+                  setConfig(data.config);
+                  setBars(data.bars);
+                  if (data.rasgueoEnabled !== undefined) {
+                    setRasgueoEnabled(data.rasgueoEnabled);
+                  }
+                  if (data.preCountEnabled !== undefined) {
+                    setPreCountEnabled(data.preCountEnabled);
+                  }
+                  setScreen(2);
+                }
+              } catch (error) {
+                console.error('Error al cargar');
+              }
+            };
+            reader.readAsText(file);
+          };
+
+          const exportAsImage = () => {
+            const element = exportRef.current;
+            if (!element) return;
+
+            if (typeof window.html2canvas === 'undefined') {
+              setTimeout(exportAsImage, 300);
+              return;
+            }
+
+            window.html2canvas(element, {
+              scale: 2,
+              backgroundColor: '#ffffff'
+            }).then(canvas => {
+              const link = document.createElement('a');
+              link.download = `${config.title || 'patron-ritmo'}.png`;
+              link.href = canvas.toDataURL('image/png');
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }).catch(console.error);
+          };
+
+          const Arrow = ({ direction, state, isCurrent, onClick, forceDown }) => {
+            const getColor = () => {
+              if (isCurrent) return 'text-yellow-400 fill-yellow-400';
+              if (state === 1) return 'text-blue-500 fill-blue-500';
+              if (state === 2) return 'text-purple-500 fill-purple-500';
+              return 'text-gray-300';
+            };
+
+            const actualDirection = (forceDown && direction === 'up') ? 'down' : direction;
+
+            return (
+              <div
+                onClick={onClick}
+                className={`w-7 h-14 cursor-pointer flex items-center justify-center transition-all ${getColor()}`}
+              >
+                <svg viewBox="0 0 24 32" className="w-full h-full">
+                  {state === 2 ? (
+                    actualDirection === 'down' ? (
+                      <>
+                        <path d="M12 2 L12 24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" />
+                        <path d="M9 20 L15 28 M15 20 L9 28" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" />
+                      </>
+                    ) : (
+                      <>
+                        <path d="M12 30 L12 8" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" />
+                        <path d="M9 4 L15 12 M15 4 L9 12" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" />
+                      </>
+                    )
+                  ) : (
+                    actualDirection === 'down' ? (
+                      <path
+                        d="M12 2 L12 24 M12 24 L8 20 M12 24 L16 20"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        fill={isCurrent || state === 1 ? 'currentColor' : 'none'}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    ) : (
+                      <path
+                        d="M12 30 L12 8 M12 8 L8 12 M12 8 L16 12"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        fill={isCurrent || state === 1 ? 'currentColor' : 'none'}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    )
+                  )}
+                </svg>
+              </div>
+            );
+          };
+
+          const Bar = ({ bar, barIndex, isExporting, showStartLine, showEndLine }) => {
+            const positions = getChordPositions();
+            
+            return (
+              <div className="flex items-center">
+                {showStartLine && <div className="w-0.5 h-8 bg-gray-800 mr-1"></div>}
+                
+                <div className="flex flex-col items-center gap-4 py-2 px-1">
+                  <div className="flex justify-center items-center gap-2 h-12 w-full relative">
+                    {bar.chords.map((chord, idx) => {
+                      const position = positions[idx];
+                      const leftPosition = (position / 7) * 100;
+                      
+                      return (
+                        <div key={idx} className="absolute" style={{ left: `${leftPosition}%`, transform: 'translateX(-50%)' }}>
+                          {chord.value === null ? null : chord.value ? (
+                            <div className="group relative">
+                              <span className="text-3xl font-bold">{chord.value}</span>
+                              {!isExporting && (
+                                <input
+                                  type="text"
+                                  placeholder="Cambiar"
+                                  className="absolute top-0 left-0 w-full opacity-0 group-hover:opacity-100 bg-white border rounded px-2 py-1 text-sm"
+                                  onKeyPress={(e) => {
+                                    if (e.key === 'Enter') {
+                                      setChord(barIndex, idx, e.target.value);
+                                      e.target.value = '';
+                                    }
+                                  }}
+                                />
+                              )}
+                            </div>
+                          ) : !isExporting ? (
+                            <div className="flex flex-col gap-1 items-center">
+                              <input
+                                type="text"
+                                placeholder="Acorde"
+                                className="w-16 px-2 py-1 border rounded text-xs"
+                                onKeyPress={(e) => {
+                                  if (e.key === 'Enter') {
+                                    setChord(barIndex, idx, e.target.value);
+                                  }
+                                }}
+                              />
+                              <button
+                                onClick={() => setChord(barIndex, idx, 'N/A')}
+                                className="px-2 py-0.5 text-xs bg-gray-200 rounded hover:bg-gray-300"
+                              >
+                                N/A
+                              </button>
+                            </div>
+                          ) : null}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <div className="flex justify-center gap-0.5">
+                    {bar.arrows.map((state, idx) => (
+                      <Arrow
+                        key={idx}
+                        direction={idx % 2 === 0 ? 'down' : 'up'}
+                        state={state}
+                        isCurrent={isPlaying && currentArrow.bar === barIndex && currentArrow.arrow === idx}
+                        onClick={() => !isExporting && toggleArrow(barIndex, idx)}
+                        forceDown={config.allDownstrokes}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Row de etiquetas: 4 grupos de 2 celdas (↓ ↑) con gap-0.5
+                      idéntico al row de arrows → alineación perfecta */}
+                  <div className="flex justify-center gap-0.5">
+                    {[0,1,2,3].map(beat => (
+                      <div key={beat} className="flex gap-0.5">
+                        {/* celda bajo el down-arrow: número de tiempo */}
+                        <div style={{width:'28px'}} className="flex items-center justify-center text-sm font-semibold text-gray-600">
+                          {beat + 1}
+                        </div>
+                        {/* celda bajo el up-arrow: "y" si corcheas activo */}
+                        <div style={{width:'28px'}} className="flex items-center justify-center text-sm font-semibold text-gray-500">
+                          {config.corcheas ? 'y' : ''}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                {showEndLine && <div className="w-0.5 h-8 bg-gray-800 ml-1"></div>}
+              </div>
+            );
+          };
+
+          if (screen === 1) {
+            return (
+              <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+                <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+                  <div className="text-center mb-8">
+                    <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">
+                      Patrón Rítmico
+                    </h1>
+                    <p className="text-gray-500 text-sm">Configura tu ejercicio de guitarra</p>
+                  </div>
+                  <div className="space-y-6">
+                    <div className="pb-6 border-b-2 border-gray-100 flex flex-col gap-3">
+                      <label className="block w-full">
+                        <div className="px-6 py-4 bg-gradient-to-r from-purple-500 to-purple-600 text-white text-center rounded-xl hover:from-purple-600 hover:to-purple-700 cursor-pointer transition-all font-bold shadow-lg hover:shadow-xl transform hover:scale-105">
+                          📂 Cargar configuración guardada
+                        </div>
+                        <input type="file" accept=".rhythm" onChange={loadConfiguration} className="hidden" />
+                      </label>
+                      <a
+                        href="https://linktr.ee/mercadoernesto"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block w-full px-6 py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white text-center rounded-xl hover:from-green-600 hover:to-emerald-700 cursor-pointer transition-all font-bold shadow-lg hover:shadow-xl transform hover:scale-105"
+                      >
+                        🌐 Redes
+                      </a>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold mb-3 text-gray-700">🎵 Título de la canción</label>
+                      <div className="flex gap-3">
+                        <input
+                          type="text"
+                          value={config.title}
+                          onChange={(e) => setConfig({ ...config, title: e.target.value })}
+                          disabled={!config.showTitle}
+                          className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all disabled:bg-gray-50"
+                          placeholder="Mi canción"
+                        />
+                        <button
+                          onClick={() => setConfig({ ...config, showTitle: !config.showTitle, title: '' })}
+                          className={`px-5 py-3 rounded-xl font-semibold transition-all ${
+                            config.showTitle 
+                              ? 'bg-gray-200 text-gray-700 hover:bg-gray-300' 
+                              : 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:from-blue-600 hover:to-indigo-600'
+                          }`}
+                        >
+                          N/A
+                        </button>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold mb-3 text-gray-700">📊 Número de compases</label>
+                      <div className="flex gap-3">
+                        {[1, 2, 4].map(num => (
+                          <button
+                            key={num}
+                            onClick={() => setConfig({ ...config, numBars: num })}
+                            className={`flex-1 py-3 rounded-xl font-semibold transition-all duration-200 ${
+                              config.numBars === num 
+                                ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg scale-105' 
+                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            }`}
+                          >
+                            {num}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold mb-3 text-gray-700">🎵 Acordes por compás</label>
+                      <div className="flex gap-3">
+                        {[1, 2, 4].map(num => (
+                          <button
+                            key={num}
+                            onClick={() => setConfig({ ...config, chordsPerBar: num })}
+                            className={`flex-1 py-3 rounded-xl font-semibold transition-all duration-200 ${
+                              config.chordsPerBar === num 
+                                ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg scale-105' 
+                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            }`}
+                          >
+                            {num}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold mb-3 text-gray-700">⏱️ BPM (Tempo)</label>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          value={config.bpm}
+                          onChange={(e) => setConfig({ ...config, bpm: parseInt(e.target.value) || 50 })}
+                          className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-semibold text-lg text-center transition-all"
+                          min="40"
+                          max="200"
+                        />
+                        <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm pointer-events-none">
+                          bpm
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-blue-50 rounded-xl p-4 border-2 border-blue-100">
+                      <label className="flex items-center gap-3 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={!!config.corcheas}
+                          onChange={(e) => setConfig({ ...config, corcheas: e.target.checked })}
+                          className="w-5 h-5 rounded border-2 border-blue-300 text-blue-500 focus:ring-2 focus:ring-blue-500"
+                        />
+                        <span className="text-sm font-semibold text-gray-700">🎼 Corcheas (mostrar "y" bajo cada ↑)</span>
+                      </label>
+                    </div>
+
+                    <div className="bg-blue-50 rounded-xl p-4 border-2 border-blue-100">
+                      <label className="flex items-center gap-3 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={config.allDownstrokes}
+                          onChange={(e) => setConfig({ ...config, allDownstrokes: e.target.checked })}
+                          className="w-5 h-5 rounded border-2 border-blue-300 text-blue-500 focus:ring-2 focus:ring-blue-500"
+                        />
+                        <span className="text-sm font-semibold text-gray-700">↓ Solo downstrokes (todas las flechas hacia abajo)</span>
+                      </label>
+                    </div>
+
+                    <button
+                      onClick={handleContinue}
+                      className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-4 rounded-xl hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 font-bold text-lg shadow-lg hover:shadow-xl transform hover:scale-105"
+                    >
+                      Continuar →
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          }
+
+          return (
+            <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
+              <div className="max-w-6xl mx-auto">
+                <button
+                  onClick={() => {
+                    stopMetronome();
+                    setScreen(1);
+                    setBars([]);
+                  }}
+                  className="mb-6 flex items-center gap-2 px-6 py-3 bg-white text-gray-700 rounded-xl hover:bg-gray-50 transition-all shadow-md hover:shadow-lg font-semibold"
+                >
+                  <ArrowLeft size={20} />
+                  Regresar
+                </button>
+
+                <div ref={exportRef} className="bg-white rounded-2xl shadow-2xl p-12 mb-6 overflow-hidden border border-gray-100">
+                  {config.showTitle && config.title && (
+                    <h2 className="text-3xl font-bold text-center mb-10 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">{config.title}</h2>
+                  )}
+
+                  <div className={`flex items-center justify-center ${config.numBars === 4 ? 'flex-col gap-4' : ''}`}>
+                    {bars.length > 0 && (
+                      <>
+                        {config.numBars === 1 ? (
+                          <Bar key={0} bar={bars[0]} barIndex={0} isExporting={false} showStartLine={true} showEndLine={true} />
+                        ) : config.numBars === 2 ? (
+                          <div className="flex items-center">
+                            <Bar key={0} bar={bars[0]} barIndex={0} isExporting={false} showStartLine={true} showEndLine={false} />
+                            <div className="w-0.5 h-8 bg-gray-800 mx-4"></div>
+                            <Bar key={1} bar={bars[1]} barIndex={1} isExporting={false} showStartLine={false} showEndLine={true} />
+                          </div>
+                        ) : (
+                          <>
+                            <div className="flex items-center">
+                              <Bar key={0} bar={bars[0]} barIndex={0} isExporting={false} showStartLine={true} showEndLine={false} />
+                              <div className="w-0.5 h-8 bg-gray-800 mx-2"></div>
+                              <Bar key={1} bar={bars[1]} barIndex={1} isExporting={false} showStartLine={false} showEndLine={true} />
+                            </div>
+                            <div className="flex items-center mt-4">
+                              <Bar key={2} bar={bars[2]} barIndex={2} isExporting={false} showStartLine={true} showEndLine={false} />
+                              <div className="w-0.5 h-8 bg-gray-800 mx-2"></div>
+                              <Bar key={3} bar={bars[3]} barIndex={3} isExporting={false} showStartLine={false} showEndLine={true} />
+                            </div>
+                          </>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+                  <div className="flex flex-wrap items-center justify-center gap-4">
+                    <div className="flex items-center gap-3 bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-3 rounded-xl border-2 border-blue-100">
+                      <label className="font-semibold text-gray-700">⏱️ BPM:</label>
+                      <input
+                        type="number"
+                        value={config.bpm}
+                        onChange={(e) => setConfig({ ...config, bpm: parseInt(e.target.value) || 50 })}
+                        className="w-20 px-3 py-2 border-2 border-blue-200 rounded-lg font-semibold text-center focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        min="40"
+                        max="200"
+                      />
+                    </div>
+
+                    <label className="flex items-center gap-3 cursor-pointer px-5 py-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl hover:from-gray-100 hover:to-gray-200 transition-all border-2 border-gray-200">
+                      <input
+                        type="checkbox"
+                        checked={preCountEnabled}
+                        onChange={(e) => setPreCountEnabled(e.target.checked)}
+                        className="w-5 h-5 rounded border-2 border-gray-300"
+                      />
+                      <span className="font-semibold text-gray-700">🔢 Pre (4 clicks)</span>
+                    </label>
+
+                    <button
+                      onClick={isPlaying ? stopMetronome : playMetronome}
+                      className={`px-8 py-3 rounded-xl font-bold transition-all text-white shadow-lg hover:shadow-xl transform hover:scale-105 ${
+                        isPlaying 
+                          ? 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700' 
+                          : 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700'
+                      }`}
+                    >
+                      {isPlaying ? '⏹ Stop' : '▶ Play'}
+                    </button>
+
+                    <button
+                      onClick={() => setRasgueoEnabled(!rasgueoEnabled)}
+                      className={`px-8 py-3 rounded-xl font-bold transition-all text-white shadow-lg hover:shadow-xl transform hover:scale-105 ${
+                        rasgueoEnabled 
+                          ? 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700' 
+                          : 'bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-500 hover:to-gray-600'
+                      }`}
+                    >
+                      🎸 Rasgueo {rasgueoEnabled ? 'ON' : 'OFF'}
+                    </button>
+
+                    <button
+                      onClick={saveConfiguration}
+                      className="px-8 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-xl hover:from-purple-600 hover:to-purple-700 transition-all font-bold shadow-lg hover:shadow-xl transform hover:scale-105"
+                    >
+                      💾 Guardar
+                    </button>
+
+                    <button
+                      onClick={exportAsImage}
+                      className="px-8 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl hover:from-blue-600 hover:to-indigo-700 transition-all font-bold shadow-lg hover:shadow-xl transform hover:scale-105"
+                    >
+                      📥 Exportar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        };
+
+        ReactDOM.render(<StrummingPatternApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>
