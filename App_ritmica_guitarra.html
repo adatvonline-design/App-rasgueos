@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estudio Rítmico · Guitarra</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@600;700;800&family=Fraunces:ital,opsz,wght@1,9..144,500;1,9..144,600;0,9..144,600&display=swap" rel="stylesheet">
+    <style>
+      :root{
+        --ink:#0b0f1a;
+        --ink2:#161c2d;
+        --line:#262d40;
+        --accent:#5b8cff;
+        --accent2:#8b5bff;
+        --gold:#e9c46a;
+        --txt:#e8ecf6;
+        --muted:#8b93a9;
+      }
+      *{ font-family:'Inter',system-ui,sans-serif; }
+      h1,h2,h3,.font-display{ font-family:'Sora','Inter',sans-serif; }
+      body{ margin:0; background:var(--ink); color:var(--txt); }
+
+      .app-bg{
+        min-height:100vh;
+        background:
+          radial-gradient(1200px 600px at 12% -10%, rgba(91,140,255,.16), transparent 60%),
+          radial-gradient(1000px 500px at 110% 10%, rgba(139,91,255,.14), transparent 55%),
+          radial-gradient(900px 700px at 50% 120%, rgba(233,196,106,.06), transparent 60%),
+          linear-gradient(180deg,#0a0e18 0%, #0b0f1a 40%, #0a0d16 100%);
+      }
+      .glass{
+        background:linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.015));
+        border:1px solid rgba(255,255,255,.08);
+        box-shadow:0 30px 80px -30px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,255,255,.06);
+        backdrop-filter:blur(14px);
+      }
+      .panel-sheet{
+        background:
+          linear-gradient(180deg,#fbfcff 0%, #f3f5fb 100%);
+        box-shadow:0 40px 90px -35px rgba(8,12,28,.9), inset 0 1px 0 rgba(255,255,255,.9);
+      }
+      .btn{
+        position:relative; border-radius:16px; font-weight:700; letter-spacing:.2px;
+        transition:transform .18s cubic-bezier(.2,.8,.2,1), box-shadow .25s, filter .25s, background .25s;
+        will-change:transform;
+      }
+      .btn:hover{ transform:translateY(-2px); }
+      .btn:active{ transform:translateY(0) scale(.985); }
+      .btn-grad{
+        background:linear-gradient(135deg, var(--accent), var(--accent2));
+        box-shadow:0 14px 30px -12px rgba(91,140,255,.7), inset 0 1px 0 rgba(255,255,255,.35);
+      }
+      .btn-grad:hover{ filter:brightness(1.08); box-shadow:0 20px 40px -12px rgba(139,91,255,.75), inset 0 1px 0 rgba(255,255,255,.4); }
+      .btn-ghost{
+        background:rgba(255,255,255,.04);
+        border:1px solid rgba(255,255,255,.1);
+      }
+      .btn-ghost:hover{ background:rgba(255,255,255,.08); }
+      .tool-btn{ transition:transform .18s cubic-bezier(.2,.8,.2,1), filter .2s, box-shadow .2s; }
+      .tool-btn:hover{ filter:brightness(1.1); }
+      .chip{
+        border-radius:14px; border:1px solid rgba(255,255,255,.1);
+        background:rgba(255,255,255,.03);
+        transition:all .2s;
+      }
+      .chip-active{
+        background:linear-gradient(135deg, var(--accent), var(--accent2));
+        border-color:transparent;
+        box-shadow:0 12px 26px -12px rgba(91,140,255,.8), inset 0 1px 0 rgba(255,255,255,.35);
+      }
+      .field{
+        background:rgba(255,255,255,.04);
+        border:1px solid rgba(255,255,255,.1);
+        color:var(--txt);
+        border-radius:14px;
+        transition:border .2s, box-shadow .2s, background .2s;
+      }
+      .field:focus{ outline:none; border-color:var(--accent); box-shadow:0 0 0 4px rgba(91,140,255,.18); background:rgba(255,255,255,.06); }
+      .field::placeholder{ color:rgba(232,236,246,.35); }
+      .eyebrow{ letter-spacing:.28em; text-transform:uppercase; font-size:11px; color:var(--muted); font-weight:700; }
+      .glow-divider{ height:1px; background:linear-gradient(90deg, transparent, rgba(255,255,255,.14), transparent); }
+      .badge-soft{ background:rgba(91,140,255,.12); border:1px solid rgba(91,140,255,.25); color:#bcd0ff; }
+      .pulse-dot{ box-shadow:0 0 0 0 rgba(91,255,150,.7); animation:pulse 1.4s infinite; }
+      @keyframes pulse{ 70%{ box-shadow:0 0 0 10px rgba(91,255,150,0);} 100%{ box-shadow:0 0 0 0 rgba(91,255,150,0);} }
+      .toggle-track{ width:46px; height:26px; border-radius:999px; background:rgba(255,255,255,.12); transition:.25s; border:1px solid rgba(255,255,255,.12); }
+      .toggle-track.on{ background:linear-gradient(135deg,var(--accent),var(--accent2)); border-color:transparent; }
+      .toggle-knob{ width:20px; height:20px; border-radius:999px; background:#fff; transition:.25s; box-shadow:0 2px 6px rgba(0,0,0,.4); }
+      .toggle-track.on .toggle-knob{ transform:translateX(20px); }
+      .arrow-cell{ transition:transform .22s cubic-bezier(.34,1.56,.64,1), filter .25s; }
+      .arrow-cell:hover{ transform:translateY(-3px) scale(1.06); }
+      .arrow-cell:active{ transform:translateY(0) scale(.94); }
+      /* aparición al activar una flecha */
+      @keyframes arrowPop{ 0%{ transform:scale(.55); opacity:0; } 60%{ transform:scale(1.12); opacity:1; } 100%{ transform:scale(1); opacity:1; } }
+      .arrow-pop{ animation:arrowPop .34s cubic-bezier(.34,1.56,.64,1) both; }
+      /* glow latente del cabezal activo */
+      @keyframes arrowGlow{ 0%,100%{ opacity:.45; } 50%{ opacity:.9; } }
+      .arrow-glow{ animation:arrowGlow 2.2s ease-in-out infinite; }
+      /* pulso dorado mientras suena */
+      @keyframes beatPulse{ 0%{ transform:scale(1); } 35%{ transform:scale(1.18); } 100%{ transform:scale(1); } }
+      .arrow-beat{ animation:beatPulse .5s cubic-bezier(.34,1.56,.64,1); }
+      /* flecha en curso (resaltado imperativo del metrónomo, sin re-render) */
+      .arrow-current{ filter:drop-shadow(0 0 9px rgba(233,196,106,.95)) drop-shadow(0 0 3px rgba(233,196,106,.9)) saturate(1.3) brightness(1.18) !important; }
+      .arrow-current svg{ filter:sepia(.6) saturate(3) hue-rotate(-18deg) brightness(1.12); }
+      .fade-in{ animation:fadeIn .5s ease both; }
+      @keyframes fadeIn{ from{ opacity:0; transform:translateY(8px);} to{ opacity:1; transform:translateY(0);} }
+      /* --- Overlay de precuenta --- */
+      .countin-overlay{
+        position:fixed; inset:0; z-index:60;
+        display:flex; flex-direction:column; align-items:center; justify-content:center; gap:28px;
+        background:rgba(8,11,20,.14);
+        pointer-events:none;
+      }
+      .countin-number{
+        font-family:'Sora','Inter',sans-serif; font-weight:800;
+        font-size:clamp(120px, 34vw, 280px); line-height:1;
+        background:linear-gradient(135deg,#bcd0ff,#cdb6ff 55%,#e9c46a);
+        -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+        filter:drop-shadow(0 6px 22px rgba(11,15,26,.85)) drop-shadow(0 2px 6px rgba(11,15,26,.9));
+        opacity:.92;
+        animation:countPop .5s cubic-bezier(.2,.9,.3,1.2) both;
+      }
+      @keyframes countPop{
+        0%{ transform:scale(.4); opacity:0; }
+        45%{ transform:scale(1.08); opacity:.92; }
+        100%{ transform:scale(1); opacity:.82; }
+      }
+      .countin-dots{ display:flex; gap:16px; }
+      .countin-dot{
+        width:15px; height:15px; border-radius:999px;
+        background:rgba(255,255,255,.22); border:1px solid rgba(255,255,255,.35);
+        box-shadow:0 2px 8px rgba(11,15,26,.6);
+        transition:all .25s;
+      }
+      .countin-dot.on{
+        background:linear-gradient(135deg,#5b8cff,#8b5bff);
+        border-color:transparent; transform:scale(1.18);
+        box-shadow:0 0 16px rgba(91,140,255,.9), 0 2px 8px rgba(11,15,26,.6);
+      }
+      /* --- Responsive móvil: cada compás escalado para caber sin scroll horizontal --- */
+      .bar-scale-wrap{ display:flex; justify-content:center; width:100%; }
+      @media (max-width: 759px){
+        .bar-scale-wrap{ transform-origin:center top; }
+      }
+      @media (max-width: 759px) and (min-width: 560px){
+        .bar-scale-wrap{ transform:scale(1); }
+      }
+      @media (max-width: 559px) and (min-width: 440px){
+        .bar-scale-wrap{ transform:scale(.82); margin:-8px 0; }
+      }
+      @media (max-width: 439px) and (min-width: 380px){
+        .bar-scale-wrap{ transform:scale(.70); margin:-15px 0; }
+      }
+      @media (max-width: 379px){
+        .bar-scale-wrap{ transform:scale(.60); margin:-20px 0; }
+      }
+      .level-card{ transition:transform .2s cubic-bezier(.2,.8,.2,1), box-shadow .25s, border-color .2s; }
+      .level-card:hover{ transform:translateY(-3px); border-color:rgba(91,140,255,.4); box-shadow:0 30px 70px -30px rgba(91,140,255,.5), inset 0 1px 0 rgba(255,255,255,.08); }
+      ::-webkit-scrollbar{ width:10px; height:10px; }
+      ::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.12); border-radius:8px; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useRef, useEffect } = React;
+
+        /* ---------- Iconos ---------- */
+        const IcoPlay = ({size=18}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>);
+        const IcoStop = ({size=18}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="5" width="14" height="14" rx="3"/></svg>);
+        const IcoBack = ({size=18}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>);
+        const IcoDice = ({size=18}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8" cy="8" r="1.4" fill="currentColor"/><circle cx="16" cy="8" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="8" cy="16" r="1.4" fill="currentColor"/><circle cx="16" cy="16" r="1.4" fill="currentColor"/></svg>);
+        const IcoBroom = ({size=18}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19.4 4.6l-8 8M14 9l1 1M3 21s2-5 6-6c2.5-.6 4-2 4-2l-2-2s-1.4 1.5-2 4c-1 4-6 6-6 6z"/></svg>);
+        const IcoSave = ({size=18}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>);
+        const IcoExport = ({size=18}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>);
+        const IcoFolder = ({size=18}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 3h8a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>);
+        const IcoLink = ({size=18}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>);
+        const IcoGuitar = ({size=18}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 4l-2 2M18 6l-1.5-1.5M16.5 7.5L8 16a4 4 0 1 1-2-2l8.5-8.5"/><circle cx="7" cy="17" r="1"/></svg>);
+
+        /* ---------- Capitaliza solo la primera letra ---------- */
+        const capFirst = (s) => {
+          if (!s) return '';
+          return s.charAt(0).toUpperCase() + s.slice(1);
+        };
+
+        /* ---------- Pie de página ---------- */
+        const Footer = () => (
+          <footer style={{ width:'100%', maxWidth:'1040px', margin:'8px auto 0', textAlign:'center', padding:'10px 0 2px' }}>
+            <a href="https://instagram.com/mercadoernesto" target="_blank" rel="noopener noreferrer"
+              style={{ display:'inline-flex', alignItems:'center', gap:'8px', color:'var(--muted)', textDecoration:'none', fontSize:'13px', fontWeight:600, letterSpacing:'.02em', transition:'color .2s' }}
+              onMouseEnter={(e)=>{ e.currentTarget.style.color='#bcd0ff'; }}
+              onMouseLeave={(e)=>{ e.currentTarget.style.color='var(--muted)'; }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5.5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+              </svg>
+              @mercadoernesto
+            </a>
+          </footer>
+        );
+
+        /* ============================================================
+           CONTROL DE ACCESO POR CONTRASEÑA (rotación bimestral automática)
+           ------------------------------------------------------------
+           - La contraseña válida cambia el día 1 de cada bimestre
+             (ene, mar, may, jul, sep, nov).
+           - Se deriva de una FRASE SECRETA + el período, con SHA-256,
+             así nadie puede adivinar la del próximo bimestre leyendo el código.
+           - Una vez validada, se guarda en el navegador hasta que caduque.
+           ============================================================ */
+
+        // 🔒 CAMBIA esta frase por una tuya, larga y privada. NO la compartas con nadie.
+        //    (Es la "llave maestra" de la que se derivan todas las contraseñas.)
+        const SECRET_PHRASE = "naumusiclab-2026-ernesto-mercado-funk-rasgueo-clave-secreta";
+
+        // Identificador del bimestre actual (p. ej. "2026-B1"). Cambia el día 1 cada 2 meses.
+        const currentPeriodId = (d = new Date()) => {
+          const y = d.getFullYear();
+          const bimester = Math.floor(d.getMonth() / 2) + 1; // 1..6
+          return `${y}-B${bimester}`;
+        };
+
+        // SHA-256 → hex
+        const sha256Hex = async (str) => {
+          const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+          return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+        };
+
+        // Contraseña legible del período: 3 bloques de 4 (p. ej. "7K3M-9QP2-4XT8")
+        const passwordForPeriod = async (periodId) => {
+          const hex = await sha256Hex(SECRET_PHRASE + '::' + periodId);
+          const alphabet = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ'; // sin 0/O/1/I para evitar confusión
+          let out = '';
+          for (let i = 0; i < 12; i++) {
+            const v = parseInt(hex.substr(i * 2, 2), 16);
+            out += alphabet[v % alphabet.length];
+            if (i === 3 || i === 7) out += '-';
+          }
+          return out; // "XXXX-XXXX-XXXX"
+        };
+
+        // Fecha en que caduca el bimestre actual (día 1 del siguiente bimestre)
+        const periodExpiry = (d = new Date()) => {
+          const y = d.getFullYear();
+          const startMonth = Math.floor(d.getMonth() / 2) * 2; // 0,2,4,...
+          const next = new Date(y, startMonth + 2, 1, 0, 0, 0, 0);
+          return next;
+        };
+
+        const Gate = ({ children }) => {
+          const [ok, setOk] = useState(false);
+          const [checking, setChecking] = useState(true);
+          const [input, setInput] = useState('');
+          const [error, setError] = useState('');
+          const periodId = currentPeriodId();
+
+          // al cargar: ¿hay un acceso guardado y válido para este período?
+          useEffect(() => {
+            try {
+              const saved = localStorage.getItem('emq_access');
+              if (saved) {
+                const data = JSON.parse(saved);
+                if (data.period === periodId) { setOk(true); }
+              }
+            } catch (e) {}
+            setChecking(false);
+          }, []);
+
+          const submit = async () => {
+            const expected = await passwordForPeriod(periodId);
+            const given = input.trim().toUpperCase().replace(/\s+/g, '');
+            // aceptamos con o sin guiones
+            const norm = (s) => s.replace(/-/g, '');
+            if (norm(given) === norm(expected)) {
+              try { localStorage.setItem('emq_access', JSON.stringify({ period: periodId })); } catch (e) {}
+              setOk(true); setError('');
+            } else {
+              setError('Contraseña incorrecta o vencida. Pide la del bimestre a @mercadoernesto.');
+            }
+          };
+
+          if (checking) return null;
+          if (ok) return children;
+
+          const exp = periodExpiry();
+          const expStr = exp.toLocaleDateString('es-MX', { day:'numeric', month:'long', year:'numeric' });
+
+          return (
+            <div className="app-bg" style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'24px', gap:'18px', minHeight:'100vh' }}>
+              <div className="glass fade-in" style={{ borderRadius:'28px', padding:'40px', width:'100%', maxWidth:'420px', textAlign:'center' }}>
+                <div className="badge-soft" style={{ display:'inline-flex', alignItems:'center', gap:'8px', padding:'6px 14px', borderRadius:'999px', fontSize:'12px', fontWeight:700, marginBottom:'20px' }}>
+                  <IcoGuitar size={14}/> ACCESO
+                </div>
+                <h1 style={{ fontSize:'30px', fontWeight:800, lineHeight:1.1, margin:'0 0 10px',
+                  background:'linear-gradient(135deg,#bcd0ff,#cdb6ff)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent' }}>
+                  Estudio Rítmico
+                </h1>
+                <p style={{ color:'var(--muted)', fontSize:'14px', margin:'0 0 24px' }}>
+                  Introduce la contraseña del bimestre para entrar.
+                </p>
+                <input type="text" value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') submit(); }}
+                  placeholder="XXXX-XXXX-XXXX"
+                  autoFocus
+                  style={{ width:'100%', padding:'15px 16px', fontWeight:700, fontSize:'18px', letterSpacing:'.08em',
+                    textAlign:'center', textTransform:'uppercase', borderRadius:'14px',
+                    border:'1px solid rgba(255,255,255,.12)', background:'rgba(255,255,255,.05)', color:'var(--txt)', outline:'none' }} />
+                {error && <p style={{ color:'#ff9aa6', fontSize:'13px', margin:'12px 0 0' }}>{error}</p>}
+                <button onClick={submit}
+                  className="btn btn-grad" style={{ width:'100%', padding:'15px', color:'#fff', fontSize:'16px', marginTop:'18px' }}>
+                  Entrar
+                </button>
+                <p style={{ color:'var(--muted)', fontSize:'12px', margin:'18px 0 0' }}>
+                  Esta contraseña es válida hasta el {expStr}.<br/>
+                  ¿No tienes acceso? Escríbeme a <a href="https://instagram.com/mercadoernesto" target="_blank" rel="noopener noreferrer" style={{ color:'#bcd0ff', textDecoration:'none' }}>@mercadoernesto</a>
+                </p>
+              </div>
+            </div>
+          );
+        };
+
+        const StrummingPatternApp = () => {
+          const [screen, setScreen] = useState(0); // 0 = menú de niveles, 1 = configuración, 2 = ejercicio
+          const [level, setLevel] = useState(1);    // 1 = rasgueo básico (corcheas), 2 = funk (16vos)
+          const [config, setConfig] = useState({
+            title: '',
+            showTitle: true,
+            numBars: 1,
+            chordsPerBar: 2,   // fijo: 2 acordes por compás
+            bpm: 80,
+            allDownstrokes: false,
+            showCount: false   // nivel 2: muestra el conteo silábico bajo las flechas
+          });
+
+          const [bars, setBars] = useState([]);
+          const [isPlaying, setIsPlaying] = useState(false);
+          // el generador "Crear Ritmo" incluye flechas muteadas (×) cuando está activo
+          const [includeMuted, setIncludeMuted] = useState(false);
+          const [rasgueoEnabled, setRasgueoEnabled] = useState(false);
+          // número de la precuenta que se muestra sobre la pantalla (0 = sin precuenta activa)
+          const [countIn, setCountIn] = useState(0);
+          // BPM como texto editable: permite borrar y reescribir en móvil sin que salte a 80
+          const [bpmText, setBpmText] = useState(String(config.bpm));
+          useEffect(() => { setBpmText(String(config.bpm)); }, [config.bpm]);
+          const onBpmChange = (e) => {
+            const v = e.target.value;
+            if (/^\d{0,3}$/.test(v)) {        // solo dígitos, hasta 3
+              setBpmText(v);
+              const n = parseInt(v, 10);
+              if (!isNaN(n) && n >= 40 && n <= 240) setConfig((c) => ({ ...c, bpm: n }));
+            }
+          };
+          const onBpmBlur = () => {
+            let n = parseInt(bpmText, 10);
+            if (isNaN(n)) n = config.bpm;
+            n = Math.min(240, Math.max(40, n));
+            setConfig((c) => ({ ...c, bpm: n }));
+            setBpmText(String(n));
+          };
+          // detecta pantalla angosta (móvil) para apilar cada compás en su propia línea
+          const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 760 : false);
+          useEffect(() => {
+            const onResize = () => setIsMobile(window.innerWidth < 760);
+            window.addEventListener('resize', onResize);
+            return () => window.removeEventListener('resize', onResize);
+          }, []);
+          const intervalRef = useRef(null);
+          const audioContextRef = useRef(null);
+          const exportRef = useRef(null);
+          // refs para resaltar la flecha en curso SIN re-render (evita el thrashing que bloqueaba los botones)
+          const arrowRefs = useRef({});
+          const currentKeyRef = useRef(null);
+          // refs vivos para que el scheduler de audio lea SIEMPRE el valor actual (evita stale closures
+          // y permite encender el rasgueo durante la reproducción — punto 2)
+          const rasgueoRef = useRef(rasgueoEnabled);
+          const barsRef = useRef(bars);
+          useEffect(() => { rasgueoRef.current = rasgueoEnabled; }, [rasgueoEnabled]);
+          useEffect(() => { barsRef.current = bars; }, [bars]);
+
+          // subdivisiones por compás según el nivel: nivel 1 = 8 (corcheas), nivel 2 = 16 (semicorcheas)
+          const stepsPerBar = level === 2 ? 16 : 8;
+
+          const highlightArrow = (bar, arrow) => {
+            const prev = currentKeyRef.current;
+            if (prev && arrowRefs.current[prev]) arrowRefs.current[prev].classList.remove('arrow-current');
+            if (bar < 0) { currentKeyRef.current = null; return; }
+            const key = `${bar}_${arrow}`;
+            const el = arrowRefs.current[key];
+            if (el) {
+              el.classList.add('arrow-current');
+              el.classList.remove('arrow-beat'); void el.offsetWidth; el.classList.add('arrow-beat');
+            }
+            currentKeyRef.current = key;
+          };
+
+          useEffect(() => {
+            if (screen === 2) {
+              const mismatch = bars.length !== config.numBars
+                || (bars[0] && bars[0].arrows.length !== stepsPerBar);
+              if (bars.length === 0 || mismatch) initializeBars();
+            }
+          }, [screen]);
+
+          const initializeBars = () => {
+            const newBars = Array(config.numBars).fill(null).map(() => ({
+              chords: Array(config.chordsPerBar).fill(0).map(() => ({ value: '', position: 0 })),
+              arrows: Array(stepsPerBar).fill(0)
+            }));
+            setBars(newBars);
+          };
+
+          const getChordPositions = () => {
+            // 2 acordes por compás, repartidos a lo ancho del compás
+            const half = Math.floor(stepsPerBar / 2);
+            return [0, half];
+          };
+
+          const handleContinue = () => {
+            if (config.numBars) setScreen(2);
+          };
+
+          const toggleArrow = (barIndex, arrowIndex) => {
+            const newBars = bars.map((b, i) => i === barIndex
+              ? { ...b, arrows: b.arrows.map((a, j) => j === arrowIndex ? (a + 1) % 3 : a) }
+              : b);
+            setBars(newBars);
+          };
+
+          /* ---------- Crear Ritmo: flechas al azar ----------
+             - Nivel 1 (o funk sin muteados): mezcla de vacías y azules.
+             - Funk (nivel 2) con "Muteados": el compás se llena por completo; cada posición
+               es azul o morada (×). No quedan posiciones vacías. */
+          const generateRandomRhythm = () => {
+            const funkMuted = level === 2 && includeMuted;
+            const newBars = bars.map((b) => ({
+              ...b,
+              arrows: b.arrows.map(() => {
+                if (funkMuted) {
+                  // todas activas: azul o morada
+                  return Math.random() < 0.5 ? 1 : 2;
+                }
+                if (Math.random() >= 0.55) return 0;             // vacía
+                if (includeMuted && Math.random() < 0.3) return 2; // muteada (×)
+                return 1;                                          // azul
+              })
+            }));
+            setBars(newBars);
+          };
+
+          /* ---------- Limpiar flechas: regresa a estado inicial ---------- */
+          const clearArrows = () => {
+            const newBars = bars.map((b) => ({ ...b, arrows: Array(stepsPerBar).fill(0) }));
+            setBars(newBars);
+          };
+
+          /* ---------- 4) Acorde: en blanco, hover para escribir, 1ra letra mayúscula ---------- */
+          const setChord = (barIndex, chordIndex, rawValue) => {
+            const positions = getChordPositions();
+            const value = capFirst(rawValue.trim());
+            const newBars = bars.map((b, i) => i === barIndex
+              ? { ...b, chords: b.chords.map((c, j) => j === chordIndex
+                  ? { value: value, position: positions[chordIndex] } : c) }
+              : b);
+            setBars(newBars);
+          };
+
+          /* ---------- Audio: scheduler basado en el reloj de Web Audio (sin deriva) ---------- */
+          // Técnica "A Tale of Two Clocks": un único lookahead scheduler agenda cada evento
+          // con timestamp exacto del AudioContext. Las flechas visuales se sincronizan a esos
+          // mismos timestamps. Esto elimina la desincronización que aparecía con setInterval.
+
+          const makeClick = (ctx, time, isDownbeat) => {
+            const osc = ctx.createOscillator();
+            const g = ctx.createGain();
+            osc.connect(g); g.connect(ctx.destination);
+            osc.frequency.value = isDownbeat ? 800 * Math.pow(2, 4 / 12) : 800;
+            osc.type = 'square';
+            g.gain.setValueAtTime(0.3, time);
+            g.gain.exponentialRampToValueAtTime(0.01, time + 0.1);
+            osc.start(time); osc.stop(time + 0.1);
+          };
+
+          // Bombo / kick para las flechas AZULES: grave y redondo, contrasta con el clic agudo del metrónomo
+          const makeKick = (ctx, time) => {
+            const osc = ctx.createOscillator();
+            const g = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(120, time);
+            osc.frequency.exponentialRampToValueAtTime(40, time + 0.12);
+            g.gain.setValueAtTime(0.0001, time);
+            g.gain.exponentialRampToValueAtTime(0.95, time + 0.006);
+            g.gain.exponentialRampToValueAtTime(0.0001, time + 0.26);
+            osc.connect(g); g.connect(ctx.destination);
+            osc.start(time); osc.stop(time + 0.28);
+          };
+
+          // Hi-hat cerrado para los MUTEADOS (×): "ts" corto y agudo, ruido pasa-altos
+          const makeHat = (ctx, time) => {
+            const dur = 0.05;
+            const buffer = ctx.createBuffer(1, Math.floor(ctx.sampleRate * dur), ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+            const noise = ctx.createBufferSource(); noise.buffer = buffer;
+            const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 8000;
+            const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 10000; bp.Q.value = 0.8;
+            const g = ctx.createGain();
+            g.gain.setValueAtTime(0.5, time);
+            g.gain.exponentialRampToValueAtTime(0.001, time + 0.045);
+            noise.connect(hp); hp.connect(bp); bp.connect(g); g.connect(ctx.destination);
+            noise.start(time); noise.stop(time + dur);
+          };
+
+          const playMetronome = () => {
+            if (!audioContextRef.current) {
+              audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            const ctx = audioContextRef.current;
+            if (ctx.state === 'suspended') ctx.resume();
+
+            const steps = stepsPerBar;                 // 8 (nivel 1) o 16 (nivel 2)
+            const numBars = config.numBars;
+            const beatMs = 60000 / config.bpm;          // duración de una negra
+            const stepDur = (beatMs / (steps / 4)) / 1000; // duración de cada subdivisión, en segundos
+            // nivel 1: 8 steps = 2 por negra (corchea) → stepDur = beatMs/2
+            // nivel 2: 16 steps = 4 por negra (semicorchea) → stepDur = beatMs/4
+            const beatStep = steps / 4;                 // cada cuántos steps cae una negra (clic del metrónomo)
+
+            setIsPlaying(true);
+
+            const session = {};
+            // estructura de control de la sesión
+            const ctrl = {
+              session,
+              timeouts: [],
+              raf: null,
+              stopped: false
+            };
+            intervalRef.current = ctrl;
+
+            // --- Precuenta (4 negras), agendada con el reloj de audio ---
+            const startTime = ctx.currentTime + 0.12;   // pequeño colchón para el primer evento
+            for (let i = 0; i < 4; i++) {
+              const tAbs = startTime + i * (beatMs / 1000);
+              makeClick(ctx, tAbs, false);
+              // mostrar el número de precuenta sincronizado al audio
+              const delayMs = (tAbs - ctx.currentTime) * 1000;
+              ctrl.timeouts.push(setTimeout(() => {
+                if (!ctrl.stopped) setCountIn(i + 1);
+              }, Math.max(0, delayMs)));
+            }
+            // fin de la precuenta → ocultar número y arrancar el patrón
+            const patternStart = startTime + 4 * (beatMs / 1000);
+            ctrl.timeouts.push(setTimeout(() => {
+              if (!ctrl.stopped) setCountIn(0);
+            }, Math.max(0, (patternStart - ctx.currentTime) * 1000)));
+
+            // --- Scheduler del patrón principal ---
+            // Recorremos pasos globales y agendamos audio con timestamp exacto.
+            // El resaltado visual se dispara con setTimeout calculado contra el reloj de audio.
+            let step = 0;                  // índice global de subdivisión desde patternStart
+            const lookahead = 0.1;         // ventana de anticipación (s)
+            const tickMs = 25;             // cada cuánto revisa el scheduler
+
+            const scheduleStep = (globalStep, tAbs) => {
+              const bar = Math.floor(globalStep / steps) % numBars;
+              const idx = globalStep % steps;
+              // clic del metrónomo en cada negra
+              if (idx % beatStep === 0) {
+                makeClick(ctx, tAbs, idx === 0);
+              }
+              // sonido de la flecha (lee refs vivos → permite encender rasgueo en vivo)
+              const liveBars = barsRef.current;
+              if (rasgueoRef.current && liveBars[bar]) {
+                const st = liveBars[bar].arrows[idx];
+                if (st === 1) makeKick(ctx, tAbs);
+                else if (st === 2) makeHat(ctx, tAbs);
+              }
+              // resaltado visual sincronizado al timestamp de audio
+              const delayMs = (tAbs - ctx.currentTime) * 1000;
+              ctrl.timeouts.push(setTimeout(() => {
+                if (!ctrl.stopped) highlightArrow(bar, idx);
+              }, Math.max(0, delayMs)));
+            };
+
+            const schedulerTick = () => {
+              if (ctrl.stopped) return;
+              const now = ctx.currentTime;
+              // agenda todos los pasos cuyo tiempo cae dentro de la ventana de anticipación
+              while (true) {
+                const tAbs = patternStart + step * stepDur;
+                if (tAbs > now + lookahead) break;
+                scheduleStep(step, tAbs);
+                step++;
+              }
+              ctrl.raf = setTimeout(schedulerTick, tickMs);
+            };
+            // arranca el scheduler (corre durante toda la reproducción)
+            ctrl.raf = setTimeout(schedulerTick, tickMs);
+          };
+
+          const stopMetronome = () => {
+            const ctrl = intervalRef.current;
+            if (ctrl) {
+              ctrl.stopped = true;
+              if (ctrl.raf) clearTimeout(ctrl.raf);
+              ctrl.timeouts.forEach(clearTimeout);
+              intervalRef.current = null;
+            }
+            setIsPlaying(false);
+            setCountIn(0);
+            highlightArrow(-1, -1);
+          };
+
+          /* ---------- 1) Barra espaciadora: play / stop ---------- */
+          // Usamos un ref a la acción de toggle para que el listener (montado una sola vez)
+          // siempre invoque la versión actual sin re-suscribirse en cada render.
+          const togglePlayRef = useRef(() => {});
+          togglePlayRef.current = () => {
+            if (screen !== 2) return;
+            if (isPlaying) stopMetronome(); else playMetronome();
+          };
+          useEffect(() => {
+            const onKey = (e) => {
+              if (e.code === 'Space' || e.key === ' ') {
+                const tag = (e.target && e.target.tagName) || '';
+                const editable = e.target && e.target.isContentEditable;
+                // no interferir si el usuario está escribiendo en un campo
+                if (tag === 'INPUT' || tag === 'TEXTAREA' || editable) return;
+                e.preventDefault();
+                togglePlayRef.current();
+              }
+            };
+            window.addEventListener('keydown', onKey);
+            return () => window.removeEventListener('keydown', onKey);
+          }, []);
+
+          const saveConfiguration = () => {
+            try {
+              const configData = { version: '4.0', config, bars, rasgueoEnabled };
+              const dataStr = JSON.stringify(configData, null, 2);
+              const blob = new Blob([dataStr], { type: 'application/json' });
+              const url = URL.createObjectURL(blob);
+              const link = document.createElement('a');
+              link.download = `${config.title || 'patron'}.rhythm`;
+              link.href = url;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+              setTimeout(() => URL.revokeObjectURL(url), 100);
+            } catch (e) { console.error('Error al guardar:', e); }
+          };
+
+          const loadConfiguration = (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              try {
+                const data = JSON.parse(e.target.result);
+                if (data.config && data.bars) {
+                  setConfig(data.config);
+                  setBars(data.bars);
+                  if (data.rasgueoEnabled !== undefined) setRasgueoEnabled(data.rasgueoEnabled);
+                  setScreen(2);
+                }
+              } catch (err) { console.error('Error al cargar'); }
+            };
+            reader.readAsText(file);
+          };
+
+          const exportAsImage = () => {
+            const element = exportRef.current;
+            if (!element) return;
+            if (typeof window.html2canvas === 'undefined') { setTimeout(exportAsImage, 300); return; }
+            window.html2canvas(element, { scale: 2, backgroundColor: '#ffffff' }).then(canvas => {
+              const link = document.createElement('a');
+              link.download = `${config.title || 'patron-ritmo'}.png`;
+              link.href = canvas.toDataURL('image/png');
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }).catch(console.error);
+          };
+
+          /* ---------- Flecha ---------- */
+          const Arrow = ({ direction, state, onClick, forceDown, uid, width=52 }) => {
+            const actualDirection = (forceDown && direction === 'up') ? 'down' : direction;
+            const filled = state === 1;
+            const muted = state === 2;
+            const active = filled || muted;
+            const sw = 3.4;
+            const cellH = Math.round(width * 96 / 52);   // mantiene proporción al cambiar el ancho
+
+            const cellRef = useRef(null);
+            // registra el nodo para el resaltado imperativo del metrónomo
+            useEffect(() => {
+              arrowRefs.current[uid] = cellRef.current;
+              return () => { if (arrowRefs.current[uid] === cellRef.current) delete arrowRefs.current[uid]; };
+            }, [uid]);
+
+            // pop solo cuando ESTA flecha cambia de estado (no por el metrónomo)
+            const [popping, setPopping] = useState(false);
+            const prevState = useRef(state);
+            useEffect(() => {
+              if (prevState.current !== state) {
+                prevState.current = state;
+                if (state !== 0) {
+                  setPopping(true);
+                  const t = setTimeout(() => setPopping(false), 360);
+                  return () => clearTimeout(t);
+                }
+              }
+            }, [state]);
+
+            // Paletas (con transparencia / degradado). El resaltado dorado lo aplica la clase .arrow-current vía CSS.
+            const palette = filled
+              ? { a:'#6ea8ff', b:'#2f6bff', glow:'rgba(47,107,255,.45)' }
+              : muted
+                ? { a:'#b89bff', b:'#7d4dff', glow:'rgba(139,91,255,.45)' }
+                : { a:'#aeb6cc', b:'#8b93a9', glow:'rgba(174,182,204,.0)' };
+
+            const gid = `g_${uid}`;
+            const fid = `f_${uid}`;
+
+            const cellClass = `arrow-cell${popping ? ' arrow-pop' : ''}`;
+
+            return (
+              <div onClick={onClick}
+                ref={cellRef}
+                className={cellClass}
+                style={{
+                  width:`${width}px`, height:`${cellH}px`, cursor:'pointer',
+                  display:'flex', alignItems:'center', justifyContent:'center',
+                  filter: active ? `drop-shadow(0 6px 10px ${palette.glow})` : 'none'
+                }}>
+                <svg viewBox="0 0 40 80" style={{ width:'100%', height:'100%', overflow:'visible' }}>
+                  <defs>
+                    <linearGradient id={gid} x1="0" y1="0" x2="0" y2="80" gradientUnits="userSpaceOnUse">
+                      <stop offset="0%" stopColor={palette.a} stopOpacity={active ? 1 : .9} />
+                      <stop offset="100%" stopColor={palette.b} stopOpacity={active ? 1 : .9} />
+                    </linearGradient>
+                    <linearGradient id={fid} x1="0" y1="0" x2="0" y2="80" gradientUnits="userSpaceOnUse">
+                      <stop offset="0%" stopColor={palette.a} stopOpacity={filled ? .95 : 0} />
+                      <stop offset="100%" stopColor={palette.b} stopOpacity={filled ? .95 : 0} />
+                    </linearGradient>
+                    {active && (
+                      <filter id={`blur_${uid}`} x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur stdDeviation="2.2" />
+                      </filter>
+                    )}
+                  </defs>
+
+                  {/* halo difuso detrás del cabezal cuando está activa */}
+                  {active && (
+                    <circle
+                      className="arrow-glow"
+                      cx="20"
+                      cy={actualDirection === 'down' ? 60 : 18}
+                      r="13"
+                      fill={palette.glow}
+                      filter={`url(#blur_${uid})`}
+                    />
+                  )}
+
+                  {muted ? (
+                    actualDirection === 'down' ? (
+                      <>
+                        <line x1="20" y1="6" x2="20" y2="54" stroke={`url(#${gid})`} strokeWidth={sw} strokeLinecap="round" />
+                        <path d="M12 52 L28 72 M28 52 L12 72" stroke={`url(#${gid})`} strokeWidth={sw} fill="none" strokeLinecap="round" />
+                      </>
+                    ) : (
+                      <>
+                        <line x1="20" y1="74" x2="20" y2="26" stroke={`url(#${gid})`} strokeWidth={sw} strokeLinecap="round" />
+                        <path d="M12 8 L28 28 M28 8 L12 28" stroke={`url(#${gid})`} strokeWidth={sw} fill="none" strokeLinecap="round" />
+                      </>
+                    )
+                  ) : (
+                    actualDirection === 'down' ? (
+                      <>
+                        <line x1="20" y1="6" x2="20" y2="50" stroke={`url(#${gid})`} strokeWidth={sw} strokeLinecap="round" />
+                        <path d="M9 50 L20 70 L31 50 Z"
+                          stroke={`url(#${gid})`} strokeWidth={sw}
+                          fill={`url(#${fid})`}
+                          strokeLinejoin="round" strokeLinecap="round" />
+                      </>
+                    ) : (
+                      <>
+                        <line x1="20" y1="74" x2="20" y2="30" stroke={`url(#${gid})`} strokeWidth={sw} strokeLinecap="round" />
+                        <path d="M9 30 L20 10 L31 30 Z"
+                          stroke={`url(#${gid})`} strokeWidth={sw}
+                          fill={`url(#${fid})`}
+                          strokeLinejoin="round" strokeLinecap="round" />
+                      </>
+                    )
+                  )}
+                </svg>
+              </div>
+            );
+          };
+
+          /* ---------- Celda de acorde editable ---------- */
+          const ChordCell = ({ barIndex, chordIndex, chord, isExporting }) => {
+            const [editing, setEditing] = useState(false);
+            const [draft, setDraft] = useState(chord.value || '');
+            const inputRef = useRef(null);
+
+            useEffect(() => { setDraft(chord.value || ''); }, [chord.value]);
+            useEffect(() => { if (editing && inputRef.current) inputRef.current.focus(); }, [editing]);
+
+            const commit = () => {
+              setChord(barIndex, chordIndex, draft);
+              setEditing(false);
+            };
+
+            if (isExporting) {
+              return chord.value
+                ? <span style={{ fontSize:'30px', fontWeight:800, color:'#0b0f1a', fontFamily:'Sora,Inter' }}>{chord.value}</span>
+                : <span style={{ display:'inline-block', width:'1px' }}></span>;
+            }
+
+            if (editing) {
+              return (
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={draft}
+                  onChange={(e) => setDraft(capFirst(e.target.value))}
+                  onBlur={commit}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') commit();
+                    if (e.key === 'Escape') { setDraft(chord.value || ''); setEditing(false); }
+                  }}
+                  placeholder="Acorde"
+                  style={{
+                    width:'88px', textAlign:'center', fontSize:'24px', fontWeight:800,
+                    fontFamily:'Sora,Inter', color:'#0b0f1a',
+                    border:'2px solid #2f6bff', borderRadius:'10px', padding:'2px 6px',
+                    background:'#fff', boxShadow:'0 0 0 4px rgba(47,107,255,.15)'
+                  }}
+                />
+              );
+            }
+
+            // Vista normal: si hay acorde lo muestra; si está vacío, celda en blanco que invita a escribir al hover
+            return (
+              <div
+                onClick={() => setEditing(true)}
+                title="Clic para escribir un acorde"
+                className="group"
+                style={{
+                  minWidth:'70px', minHeight:'40px', display:'flex', alignItems:'center', justifyContent:'center',
+                  cursor:'text', borderRadius:'10px', transition:'background .15s, box-shadow .15s'
+                }}
+                onMouseEnter={(e)=>{ if(!chord.value){ e.currentTarget.style.background='rgba(47,107,255,.07)'; e.currentTarget.style.boxShadow='inset 0 0 0 1.5px rgba(47,107,255,.35)'; } }}
+                onMouseLeave={(e)=>{ e.currentTarget.style.background='transparent'; e.currentTarget.style.boxShadow='none'; }}
+              >
+                {chord.value
+                  ? <span style={{ fontSize:'30px', fontWeight:800, color:'#0b0f1a', fontFamily:'Sora,Inter' }}>{chord.value}</span>
+                  : <span className="opacity-0 group-hover:opacity-100" style={{ fontSize:'13px', color:'#2f6bff', fontWeight:600, transition:'opacity .15s', userSelect:'none' }}>+ Acorde</span>}
+              </div>
+            );
+          };
+
+          /* ---------- Título editable al hover (en la partitura) ---------- */
+          const TitleCell = ({ isExporting, isMobile }) => {
+            const [editing, setEditing] = useState(false);
+            const [draft, setDraft] = useState(config.title || '');
+            const inputRef = useRef(null);
+            useEffect(() => { setDraft(config.title || ''); }, [config.title]);
+            useEffect(() => { if (editing && inputRef.current) inputRef.current.focus(); }, [editing]);
+
+            const commit = () => {
+              setConfig((c) => ({ ...c, title: draft.trim() }));
+              setEditing(false);
+            };
+            const fs = isMobile ? 24 : 30;
+            const mb = isMobile ? 22 : 34;
+
+            if (isExporting) {
+              return config.title
+                ? <h2 style={{ textAlign:'center', fontSize:`${fs}px`, fontWeight:800, margin:`0 0 ${mb}px`, color:'#0b0f1a', fontFamily:'Sora,Inter', letterSpacing:'-.5px' }}>{config.title}</h2>
+                : <div style={{ height:`${mb}px` }} />;
+            }
+            if (editing) {
+              return (
+                <div style={{ textAlign:'center', marginBottom:`${mb}px` }}>
+                  <input ref={inputRef} type="text" value={draft}
+                    onChange={(e) => setDraft(e.target.value)}
+                    onBlur={commit}
+                    onKeyDown={(e) => { if (e.key === 'Enter') commit(); if (e.key === 'Escape') { setDraft(config.title || ''); setEditing(false); } }}
+                    placeholder="Título"
+                    style={{ textAlign:'center', fontSize:`${fs}px`, fontWeight:800, fontFamily:'Sora,Inter', color:'#0b0f1a',
+                      border:'2px solid #2f6bff', borderRadius:'12px', padding:'2px 14px', background:'#fff',
+                      boxShadow:'0 0 0 4px rgba(47,107,255,.15)', maxWidth:'90%' }} />
+                </div>
+              );
+            }
+            return (
+              <div onClick={() => setEditing(true)} title="Clic para escribir un título" className="group"
+                style={{ textAlign:'center', marginBottom:`${mb}px`, cursor:'text', minHeight:`${fs+6}px`, display:'flex', alignItems:'center', justifyContent:'center' }}>
+                {config.title
+                  ? <h2 style={{ fontSize:`${fs}px`, fontWeight:800, margin:0, color:'#0b0f1a', fontFamily:'Sora,Inter', letterSpacing:'-.5px' }}>{config.title}</h2>
+                  : <span className="opacity-0 group-hover:opacity-100" style={{ fontSize:'14px', color:'#2f6bff', fontWeight:600, transition:'opacity .15s', userSelect:'none' }}>+ Título</span>}
+              </div>
+            );
+          };
+
+          /* ---------- Compás ---------- */
+          const Bar = ({ bar, barIndex, isExporting }) => {
+            const positions = getChordPositions();
+            const steps = bar.arrows.length;            // 8 o 16
+            const is16 = steps === 16;
+            const cellW = is16 ? 34 : 60;                // flechas más grandes (16vos algo más angostas)
+            const groupGap = is16 ? 22 : 0;              // separación entre grupos de 4 (estilo partitura)
+            const innerGap = 2;
+            // ancho total considerando los 4 grupos y sus separaciones (nivel 2)
+            const totalW = is16
+              ? 4 * (4 * (cellW + innerGap)) + 3 * groupGap
+              : steps * (cellW + innerGap);
+
+            const syll = ['to','ma','te','lo'];
+
+            // fila de flechas agrupada en bloques de 4 (nivel 2) o lineal (nivel 1)
+            const arrowsRow = () => {
+              if (is16) {
+                return (
+                  <div style={{ display:'flex', justifyContent:'center', gap:`${groupGap}px` }}>
+                    {[0,1,2,3].map(g => (
+                      <div key={g} style={{ display:'flex', gap:`${innerGap}px` }}>
+                        {[0,1,2,3].map(s => {
+                          const idx = g * 4 + s;
+                          return (
+                            <Arrow key={idx}
+                              uid={`${barIndex}_${idx}`}
+                              direction={idx % 2 === 0 ? 'down' : 'up'}
+                              state={bar.arrows[idx]}
+                              width={cellW}
+                              onClick={() => !isExporting && toggleArrow(barIndex, idx)}
+                              forceDown={config.allDownstrokes} />
+                          );
+                        })}
+                      </div>
+                    ))}
+                  </div>
+                );
+              }
+              return (
+                <div style={{ display:'flex', justifyContent:'center', gap:`${innerGap}px` }}>
+                  {bar.arrows.map((state, idx) => (
+                    <Arrow key={idx}
+                      uid={`${barIndex}_${idx}`}
+                      direction={idx % 2 === 0 ? 'down' : 'up'}
+                      state={state}
+                      width={cellW}
+                      onClick={() => !isExporting && toggleArrow(barIndex, idx)}
+                      forceDown={config.allDownstrokes} />
+                  ))}
+                </div>
+              );
+            };
+
+            const countRow = () => {
+              if (is16) {
+                // conteo agrupado: "to ma te lo" bajo cada grupo de 4, separado igual que las flechas.
+                // Cuando la casilla "Cuenta" está activa, se muestran las sílabas; si no, solo el número del beat.
+                return (
+                  <div style={{ display:'flex', justifyContent:'center', gap:`${groupGap}px` }}>
+                    {[0,1,2,3].map(g => (
+                      <div key={g} style={{ display:'flex', gap:`${innerGap}px` }}>
+                        {[0,1,2,3].map(s => {
+                          const isMain = s === 0;
+                          const label = config.showCount ? syll[s] : (isMain ? String(g + 1) : '');
+                          // cuando se muestran las sílabas, usamos una serif elegante (Fraunces italic)
+                          return (
+                            <div key={s} style={{ width:`${cellW}px`, textAlign:'center',
+                              fontFamily: config.showCount ? "'Fraunces', Georgia, serif" : 'Inter, sans-serif',
+                              fontStyle: config.showCount ? 'italic' : 'normal',
+                              fontSize: config.showCount ? '17px' : '13px',
+                              fontWeight: config.showCount ? (isMain ? 600 : 500) : (isMain ? 700 : 600),
+                              letterSpacing: config.showCount ? '.01em' : 'normal',
+                              color: isMain ? '#0b0f1a' : (config.showCount ? '#3a4154' : '#6b7280') }}>
+                              {label}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ))}
+                  </div>
+                );
+              }
+              // nivel 1
+              return (
+                <div style={{ display:'flex', justifyContent:'center', gap:'2px' }}>
+                  {[0,1,2,3].map(beat => {
+                    const upState = bar.arrows[beat * 2 + 1];
+                    const showY = upState === 1 || upState === 2;
+                    return (
+                      <div key={beat} style={{ display:'flex', gap:'2px' }}>
+                        <div style={{ width:'60px', textAlign:'center', fontSize:'18px', fontWeight:700, color:'#0b0f1a' }}>{beat + 1}</div>
+                        <div style={{ width:'60px', textAlign:'center', fontSize:'18px', fontWeight:600, color:'#6b7280' }}>{showY ? 'y' : ''}</div>
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            };
+
+            return (
+              <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:'14px', padding:'8px 6px' }}>
+                <div style={{ position:'relative', height:'44px', width:`${totalW}px`, display:'flex', justifyContent:'center' }}>
+                  {bar.chords.map((chord, idx) => {
+                    const position = positions[idx];
+                    const leftPosition = (position / (steps - 1)) * 100;
+                    return (
+                      <div key={idx} style={{ position:'absolute', left:`${leftPosition}%`, transform:'translateX(-50%)' }}>
+                        <ChordCell barIndex={barIndex} chordIndex={idx} chord={chord} isExporting={isExporting} />
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {arrowsRow()}
+                {countRow()}
+              </div>
+            );
+          };
+
+          const Barline = ({h=100}) => (
+            <div style={{
+              width:'4px', height:`${h}px`,
+              background:'linear-gradient(180deg,#0b0f1a 0%, #1c2640 50%, #0b0f1a 100%)',
+              borderRadius:'3px', margin:'0 14px',
+              boxShadow:'0 2px 6px rgba(11,15,26,.25)'
+            }}></div>
+          );
+
+          const BarsRow = ({ idxs }) => (
+            <div style={{ display:'flex', alignItems:'flex-start' }}>
+              <div style={{ marginTop:'52px' }}><Barline /></div>
+              {idxs.map((bi, k) => (
+                <React.Fragment key={bi}>
+                  <Bar bar={bars[bi]} barIndex={bi} isExporting={false} />
+                  <div style={{ marginTop:'52px' }}><Barline /></div>
+                </React.Fragment>
+              ))}
+            </div>
+          );
+
+          // Escala el contenido para que quepa en el ancho disponible (móvil), midiendo dinámicamente.
+          // Funciona con cualquier número de flechas (8 o 16) sin depender de breakpoints fijos.
+          const ScaledBar = ({ children }) => {
+            const outerRef = useRef(null);
+            const innerRef = useRef(null);
+            const [scale, setScale] = useState(1);
+            useEffect(() => {
+              const fit = () => {
+                if (!outerRef.current || !innerRef.current) return;
+                const avail = outerRef.current.clientWidth;
+                const natural = innerRef.current.scrollWidth;
+                if (natural > 0) {
+                  const s = Math.min(1, avail / natural);
+                  setScale(s);
+                }
+              };
+              fit();
+              window.addEventListener('resize', fit);
+              const id = setTimeout(fit, 60); // re-mide tras el primer render
+              return () => { window.removeEventListener('resize', fit); clearTimeout(id); };
+            }, []);
+            return (
+              <div ref={outerRef} style={{ width:'100%', display:'flex', justifyContent:'center', overflow:'hidden' }}>
+                <div ref={innerRef} style={{ transform:`scale(${scale})`, transformOrigin:'center top',
+                  height: scale < 1 ? undefined : 'auto', marginBottom: scale < 1 ? `${-(1-scale)*230}px` : 0 }}>
+                  {children}
+                </div>
+              </div>
+            );
+          };
+
+          /* ---------- Toggle bonito ---------- */
+          const Toggle = ({ checked, onChange, label, hint }) => (
+            <button onClick={() => onChange(!checked)}
+              className="chip"
+              style={{ display:'flex', alignItems:'center', gap:'14px', width:'100%', padding:'14px 16px', textAlign:'left' }}>
+              <span className={`toggle-track ${checked ? 'on':''}`} style={{ display:'flex', alignItems:'center', padding:'2px' }}>
+                <span className="toggle-knob"></span>
+              </span>
+              <span style={{ flex:1 }}>
+                <span style={{ display:'block', fontWeight:700, fontSize:'14px', color:'var(--txt)' }}>{label}</span>
+                {hint && <span style={{ display:'block', fontSize:'12px', color:'var(--muted)' }}>{hint}</span>}
+              </span>
+            </button>
+          );
+
+          /* ============ PANTALLA 0: SELECCIÓN DE NIVEL ============ */
+          if (screen === 0) {
+            const chooseLevel = (lvl) => {
+              setLevel(lvl);
+              setBars([]); // se regenerará con la subdivisión correcta
+              setConfig((c) => ({
+                ...c,
+                numBars: lvl === 2 ? 1 : c.numBars,   // nivel 2: 1 compás por ahora
+                showCount: false
+              }));
+              setScreen(1);
+            };
+            const LevelCard = ({ lvl, tag, title, desc, accent, enabled=true }) => (
+              <button onClick={() => enabled && chooseLevel(lvl)}
+                className="glass level-card"
+                style={{ textAlign:'left', padding:'26px', borderRadius:'22px', cursor: enabled?'pointer':'not-allowed',
+                  opacity: enabled?1:.55, width:'100%', position:'relative', overflow:'hidden' }}>
+                <div style={{ position:'absolute', top:0, left:0, width:'5px', height:'100%', background:accent }}></div>
+                <div className="badge-soft" style={{ display:'inline-flex', alignItems:'center', gap:'7px', padding:'5px 12px', borderRadius:'999px', fontSize:'11px', fontWeight:700, marginBottom:'12px' }}>
+                  {tag}
+                </div>
+                <div style={{ fontFamily:'Sora,Inter', fontSize:'24px', fontWeight:800, color:'var(--txt)', marginBottom:'6px' }}>{title}</div>
+                <div style={{ color:'var(--muted)', fontSize:'14px', lineHeight:1.5 }}>{desc}</div>
+                {enabled && (
+                  <div style={{ marginTop:'16px', display:'inline-flex', alignItems:'center', gap:'8px', color:'#bcd0ff', fontWeight:700, fontSize:'14px' }}>
+                    Entrar →
+                  </div>
+                )}
+              </button>
+            );
+            return (
+              <div className="app-bg" style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'24px', gap:'18px' }}>
+                <div className="fade-in" style={{ width:'100%', maxWidth:'520px' }}>
+                  <div style={{ textAlign:'center', marginBottom:'30px' }}>
+                    <div className="badge-soft" style={{ display:'inline-flex', alignItems:'center', gap:'8px', padding:'6px 14px', borderRadius:'999px', fontSize:'12px', fontWeight:700, marginBottom:'18px' }}>
+                      <IcoGuitar size={14}/> ESTUDIO RÍTMICO
+                    </div>
+                    <h1 style={{ fontSize:'42px', fontWeight:800, lineHeight:1.05, margin:'0 0 8px',
+                      background:'linear-gradient(135deg,#bcd0ff,#cdb6ff)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent' }}>
+                      Elige tu nivel
+                    </h1>
+                    <p style={{ color:'var(--muted)', fontSize:'14px', margin:0 }}>Cada nivel trabaja una habilidad rítmica distinta.</p>
+                  </div>
+                  <div style={{ display:'flex', flexDirection:'column', gap:'14px' }}>
+                    <LevelCard lvl={1} tag="NIVEL 1" title="Rasgueo básico" accent="linear-gradient(180deg,#5b8cff,#8b5bff)"
+                      desc="Patrones de rasgueo en corcheas. Construye, escucha y exporta tus ejercicios. Ideal para empezar." />
+                    <LevelCard lvl={2} tag="NIVEL 2 · FUNK" title="Funk en 16vos" accent="linear-gradient(180deg,#e9c46a,#e07f2a)"
+                      desc="Semicorcheas, groove y conteo silábico (to-ma-te-lo). Ejercicios de un compás para afinar tu mano derecha." />
+                  </div>
+                </div>
+                <Footer />
+              </div>
+            );
+          }
+
+          /* ============ PANTALLA 1: CONFIGURACIÓN ============ */
+          if (screen === 1) {
+            const isFunk = level === 2;
+            return (
+              <div className="app-bg" style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'24px', gap:'18px' }}>
+                <div className="glass fade-in" style={{ borderRadius:'28px', padding:'40px', width:'100%', maxWidth:'480px' }}>
+                  <div style={{ textAlign:'center', marginBottom:'28px' }}>
+                    <div className="badge-soft" style={{ display:'inline-flex', alignItems:'center', gap:'8px', padding:'6px 14px', borderRadius:'999px', fontSize:'12px', fontWeight:700, marginBottom:'18px' }}>
+                      <IcoGuitar size={14}/> {isFunk ? 'NIVEL 2 · FUNK' : 'NIVEL 1 · RASGUEO'}
+                    </div>
+                    <h1 style={{ fontSize:'40px', fontWeight:800, lineHeight:1.05, margin:'0 0 8px',
+                      background:'linear-gradient(135deg,#bcd0ff,#cdb6ff)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent' }}>
+                      {isFunk ? 'Funk en 16vos' : 'Patrones de Rasgueo'}
+                    </h1>
+                    <p style={{ color:'var(--muted)', fontSize:'14px', margin:0 }}>
+                      {isFunk ? 'Semicorcheas, acentos y groove. Practica con conteo.' : 'Diseña, escucha y exporta tus ejercicios de guitarra.'}
+                    </p>
+                  </div>
+
+                  <div style={{ display:'flex', flexDirection:'column', gap:'12px', marginBottom:'22px' }}>
+                    <label className="btn btn-grad" style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:'10px', padding:'15px', color:'#fff', cursor:'pointer' }}>
+                      <IcoFolder/> Cargar configuración guardada
+                      <input type="file" accept=".rhythm" onChange={loadConfiguration} style={{ display:'none' }} />
+                    </label>
+                    <button onClick={() => { setScreen(0); }}
+                      className="btn btn-ghost" style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:'10px', padding:'15px', color:'var(--txt)' }}>
+                      <IcoBack/> Cambiar de nivel
+                    </button>
+                  </div>
+
+                  <div className="glow-divider" style={{ margin:'4px 0 22px' }}></div>
+
+                  <div style={{ display:'flex', flexDirection:'column', gap:'20px' }}>
+                    {!isFunk && (
+                      <div>
+                        <div className="eyebrow" style={{ marginBottom:'10px' }}>Número de compases</div>
+                        <div style={{ display:'flex', gap:'10px' }}>
+                          {[1,2,4].map(num => (
+                            <button key={num} onClick={() => setConfig({ ...config, numBars: num })}
+                              className={`chip ${config.numBars===num?'chip-active':''}`}
+                              style={{ flex:1, padding:'13px 0', fontWeight:700, color: config.numBars===num?'#fff':'var(--txt)' }}>
+                              {num}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <div>
+                      <div className="eyebrow" style={{ marginBottom:'10px' }}>Tempo (BPM)</div>
+                      <input type="text" inputMode="numeric" pattern="[0-9]*" value={bpmText}
+                        onChange={onBpmChange} onBlur={onBpmBlur}
+                        onFocus={(e) => e.target.select()}
+                        className="field" style={{ width:'100%', padding:'13px 16px', fontWeight:700, fontSize:'18px', textAlign:'center' }} />
+                    </div>
+
+                    {!isFunk && (
+                      <div style={{ display:'flex', flexDirection:'column', gap:'10px' }}>
+                        <Toggle checked={config.allDownstrokes} onChange={(v)=>setConfig({...config, allDownstrokes:v})}
+                          label='Solo downstrokes' hint='Todas las flechas hacia abajo ↓' />
+                      </div>
+                    )}
+
+                    <button onClick={handleContinue}
+                      className="btn btn-grad" style={{ padding:'17px', color:'#fff', fontSize:'17px', marginTop:'4px' }}>
+                      Continuar →
+                    </button>
+                  </div>
+                </div>
+                <Footer />
+              </div>
+            );
+          }
+
+          /* ============ PANTALLA 2 ============ */
+          const ToolBtn = ({ onClick, children, variant='ghost', active }) => {
+            // Determina el fondo según prioridad: active > stop/play > grad > ghost
+            let bg, color = 'var(--txt)', shadow = 'none';
+            if (active) {
+              bg = 'linear-gradient(135deg,#f0a64a,#e07f2a)'; color = '#fff';
+              shadow = '0 14px 30px -12px rgba(240,166,74,.6)';
+            } else if (variant === 'stop') {
+              bg = 'linear-gradient(135deg,#ff5a6e,#e23b52)'; color = '#fff';
+              shadow = '0 14px 30px -12px rgba(255,90,110,.6)';
+            } else if (variant === 'play') {
+              bg = 'linear-gradient(135deg,#21c47a,#0f9e63)'; color = '#fff';
+              shadow = '0 14px 30px -12px rgba(33,196,122,.6)';
+            } else if (variant === 'grad') {
+              bg = 'linear-gradient(135deg, var(--accent), var(--accent2))'; color = '#fff';
+              shadow = '0 14px 30px -12px rgba(91,140,255,.7)';
+            } else {
+              bg = 'rgba(255,255,255,.04)';
+              shadow = 'none';
+            }
+            return (
+              <button onClick={onClick}
+                className="btn tool-btn"
+                style={{
+                  display:'flex', alignItems:'center', gap:'9px', padding:'13px 18px', fontSize:'14px',
+                  fontWeight:700, borderRadius:'16px', cursor:'pointer',
+                  border: (variant==='ghost' && !active) ? '1px solid rgba(255,255,255,.1)' : '1px solid transparent',
+                  background: bg, color: color, boxShadow: shadow
+                }}>
+                {children}
+              </button>
+            );
+          };
+
+          return (
+            <div className="app-bg" style={{ padding: isMobile ? '20px 10px 50px' : '28px 20px 60px', position:'relative' }}>
+              {countIn > 0 && (
+                <div className="countin-overlay">
+                  <div key={countIn} className="countin-number">{countIn}</div>
+                  <div className="countin-dots">
+                    {[1,2,3,4].map(n => (
+                      <span key={n} className={`countin-dot${n <= countIn ? ' on' : ''}`}></span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              <div style={{ maxWidth:'1040px', margin:'0 auto' }}>
+                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'22px', flexWrap:'wrap', gap:'12px' }}>
+                  <button onClick={() => { stopMetronome(); setScreen(1); }}
+                    className="btn btn-ghost" style={{ display:'flex', alignItems:'center', gap:'9px', padding:'12px 18px', color:'var(--txt)' }}>
+                    <IcoBack/> Regresar
+                  </button>
+                  <div className="badge-soft" style={{ display:'inline-flex', alignItems:'center', gap:'8px', padding:'8px 16px', borderRadius:'999px', fontSize:'12px', fontWeight:700 }}>
+                    <IcoGuitar size={14}/> {level===2 ? 'Funk · ' : ''}{config.numBars} {config.numBars===1?'compás':'compases'} · {config.bpm} BPM
+                  </div>
+                </div>
+
+                {/* Hoja de partitura */}
+                <div ref={exportRef} className="panel-sheet" style={{ borderRadius:'24px', padding: isMobile ? '28px 10px' : '48px 40px', marginBottom:'22px', overflowX:'hidden' }}>
+                  <TitleCell isExporting={false} isMobile={isMobile} />
+                  <div style={{ display:'flex', alignItems:'center', justifyContent:'center', flexDirection: (isMobile || config.numBars===4) ? 'column':'row', gap: (isMobile || config.numBars===4) ? (isMobile ? '8px' : '20px') :'0' }}>
+                    {bars.length > 0 && (
+                      isMobile
+                        ? bars.map((_, i) => <ScaledBar key={i}><BarsRow idxs={[i]} /></ScaledBar>)
+                        : config.numBars === 1 ? <BarsRow idxs={[0]} /> :
+                          config.numBars === 2 ? <BarsRow idxs={[0,1]} /> :
+                          (<>
+                            <BarsRow idxs={[0,1]} />
+                            <BarsRow idxs={[2,3]} />
+                          </>)
+                    )}
+                  </div>
+                </div>
+
+                {/* Generador y limpieza */}
+                <div className="glass" style={{ borderRadius:'20px', padding:'18px 20px', marginBottom:'18px' }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:'14px', flexWrap:'wrap', justifyContent:'center' }}>
+                    <span className="eyebrow" style={{ marginRight:'4px' }}>Generador</span>
+                    <ToolBtn onClick={generateRandomRhythm} variant="grad"><IcoDice/> Crear Ritmo</ToolBtn>
+                    <button onClick={() => setIncludeMuted(!includeMuted)}
+                      className={`chip ${includeMuted?'chip-active':''}`}
+                      style={{ display:'flex', alignItems:'center', gap:'10px', padding:'13px 16px', color: includeMuted?'#fff':'var(--txt)', fontWeight:700, fontSize:'14px' }}>
+                      <span className={`toggle-track ${includeMuted?'on':''}`} style={{ display:'flex', alignItems:'center', padding:'2px', width:'40px', height:'22px' }}>
+                        <span className="toggle-knob" style={{ width:'16px', height:'16px' }}></span>
+                      </span>
+                      Muteados (×)
+                    </button>
+                    {level === 2 && (
+                      <button onClick={() => setConfig({...config, showCount: !config.showCount})}
+                        className={`chip ${config.showCount?'chip-active':''}`}
+                        style={{ display:'flex', alignItems:'center', gap:'10px', padding:'13px 16px', color: config.showCount?'#fff':'var(--txt)', fontWeight:700, fontSize:'14px' }}>
+                        <span className={`toggle-track ${config.showCount?'on':''}`} style={{ display:'flex', alignItems:'center', padding:'2px', width:'40px', height:'22px' }}>
+                          <span className="toggle-knob" style={{ width:'16px', height:'16px' }}></span>
+                        </span>
+                        Cuenta
+                      </button>
+                    )}
+                    <ToolBtn onClick={clearArrows}><IcoBroom/> Borrar todo</ToolBtn>
+                    <span style={{ fontSize:'12px', color:'var(--muted)' }}>Toca cada flecha para alternar: vacía → azul → púrpura (×)</span>
+                  </div>
+                </div>
+
+                {/* Transporte */}
+                <div className="glass" style={{ borderRadius:'20px', padding:'20px' }}>
+                  <div style={{ display:'flex', flexWrap:'wrap', alignItems:'center', justifyContent:'center', gap:'14px' }}>
+                    <div className="chip" style={{ display:'flex', alignItems:'center', gap:'10px', padding:'10px 16px' }}>
+                      <span style={{ fontSize:'13px', fontWeight:700, color:'var(--muted)' }}>BPM</span>
+                      <input type="text" inputMode="numeric" pattern="[0-9]*" value={bpmText}
+                        onChange={onBpmChange} onBlur={onBpmBlur}
+                        onFocus={(e) => e.target.select()}
+                        className="field" style={{ width:'76px', padding:'8px', fontWeight:700, textAlign:'center' }} />
+                    </div>
+
+                    <ToolBtn onClick={isPlaying ? stopMetronome : playMetronome} variant={isPlaying?'stop':'play'}>
+                      {isPlaying ? <><IcoStop/> Detener</> : <><IcoPlay/> Reproducir</>}
+                    </ToolBtn>
+
+                    <ToolBtn onClick={() => setRasgueoEnabled(!rasgueoEnabled)} active={rasgueoEnabled}>
+                      <IcoGuitar/> Rasgueo {rasgueoEnabled ? 'ON':'OFF'}
+                    </ToolBtn>
+
+                    <ToolBtn onClick={saveConfiguration}><IcoSave/> Guardar</ToolBtn>
+                    <ToolBtn onClick={exportAsImage} variant="grad"><IcoExport/> Exportar PNG</ToolBtn>
+                  </div>
+
+                  {isPlaying && (
+                    <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:'8px', marginTop:'14px', color:'#7be0a4', fontSize:'13px', fontWeight:600 }}>
+                      <span className="pulse-dot" style={{ width:'9px', height:'9px', borderRadius:'999px', background:'#21c47a' }}></span>
+                      Reproduciendo…
+                    </div>
+                  )}
+                </div>
+
+                <Footer />
+              </div>
+            </div>
+          );
+        };
+
+        ReactDOM.render(<Gate><StrummingPatternApp /></Gate>, document.getElementById('root'));
+    </script>
+</body>
+</html>
