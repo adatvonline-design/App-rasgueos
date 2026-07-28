@@ -219,6 +219,12 @@
         //    (Es la "llave maestra" de la que se derivan todas las contraseñas.)
         const SECRET_PHRASE = "naumusiclab-2026-ernesto-mercado-funk-rasgueo-clave-secreta";
 
+        /* ⚙️ BANDERAS DE FUNCIONES — para prender/apagar sin tocar el resto del código.
+           SHOW_LOAD_CONFIG: muestra el botón "Cargar configuración guardada" en la pantalla
+           de configuración. Apagado (false) para la versión publicada en GitHub Pages.
+           Para volver a activarlo: cambiar a true. [2026-07-28] */
+        const SHOW_LOAD_CONFIG = false;
+
         // Identificador del bimestre actual (p. ej. "2026-B1"). Cambia el día 1 cada 2 meses.
         const currentPeriodId = (d = new Date()) => {
           const y = d.getFullYear();
@@ -927,6 +933,13 @@
 
             const syll = ['to','ma','te','lo'];
 
+            /* En NIVEL 2 (funk, 16vos) la mano nunca deja de alternar: tiempo 1 SIEMPRE
+               hacia abajo y de ahí ↓↑↓↑… "Solo downstrokes" es una opción exclusiva del
+               nivel 1 y su toggle está oculto aquí — sin este guard, quedarse con la
+               opción encendida desde el nivel 1 (o cargar un .rhythm que la traiga)
+               dejaba las 16 flechas hacia abajo sin forma de apagarlo. [2026-07-28] */
+            const forceDownFlag = !is16 && config.allDownstrokes;
+
             // fila de flechas agrupada en bloques de 4 (nivel 2) o lineal (nivel 1)
             const arrowsRow = () => {
               if (is16) {
@@ -943,7 +956,7 @@
                               state={bar.arrows[idx]}
                               width={cellW}
                               onClick={() => !isExporting && toggleArrow(barIndex, idx)}
-                              forceDown={config.allDownstrokes} />
+                              forceDown={forceDownFlag} />
                           );
                         })}
                       </div>
@@ -960,7 +973,7 @@
                       state={state}
                       width={cellW}
                       onClick={() => !isExporting && toggleArrow(barIndex, idx)}
-                      forceDown={config.allDownstrokes} />
+                      forceDown={forceDownFlag} />
                   ))}
                 </div>
               );
@@ -1174,10 +1187,12 @@
                   </div>
 
                   <div style={{ display:'flex', flexDirection:'column', gap:'12px', marginBottom:'22px' }}>
-                    <label className="btn btn-grad" style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:'10px', padding:'15px', color:'#fff', cursor:'pointer' }}>
-                      <IcoFolder/> Cargar configuración guardada
-                      <input type="file" accept=".rhythm" onChange={loadConfiguration} style={{ display:'none' }} />
-                    </label>
+                    {SHOW_LOAD_CONFIG && (
+                      <label className="btn btn-grad" style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:'10px', padding:'15px', color:'#fff', cursor:'pointer' }}>
+                        <IcoFolder/> Cargar configuración guardada
+                        <input type="file" accept=".rhythm" onChange={loadConfiguration} style={{ display:'none' }} />
+                      </label>
+                    )}
                     <button onClick={() => { setScreen(0); }}
                       className="btn btn-ghost" style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:'10px', padding:'15px', color:'var(--txt)' }}>
                       <IcoBack/> Cambiar de nivel
