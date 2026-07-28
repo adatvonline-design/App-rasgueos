@@ -384,6 +384,75 @@
           );
         };
 
+        /* ScaledBar vive FUERA de StrummingPatternApp a proposito: definido adentro,
+           React lo trata como un componente distinto en cada render, lo desmonta y lo
+           vuelve a montar, y con eso se pierde la escala medida y se desconecta el
+           ResizeObserver. Ese era el bug de "se sale de los limites". [2026-07-28] */
+        // Escala el contenido para que quepa en el ancho disponible (móvil), midiendo dinámicamente.
+        // Funciona con cualquier número de flechas (8 o 16) sin depender de breakpoints fijos.
+        const ScaledBar = ({ children }) => {
+          const outerRef = useRef(null);
+          const innerRef = useRef(null);
+          const [scale, setScale] = useState(1);
+          const [naturalH, setNaturalH] = useState(0);
+
+          const fit = () => {
+            if (!outerRef.current || !innerRef.current) return;
+            const avail = outerRef.current.clientWidth;
+            // scrollWidth/offsetHeight NO los afecta el transform: son medidas de layout,
+            // así que siguen dando el tamaño natural aunque ya estemos escalando.
+            const natural = innerRef.current.scrollWidth;
+            const h = innerRef.current.offsetHeight;
+            if (avail > 0 && natural > 0) {
+              const s = Math.min(1, avail / natural);
+              // el umbral evita re-renders infinitos: si el cambio es despreciable, no toca el estado
+              setScale(prev => Math.abs(s - prev) < 0.002 ? prev : s);
+              setNaturalH(prev => prev === h ? prev : h);
+            }
+          };
+
+          /* Se re-mide DESPUÉS DE CADA RENDER, a propósito y sin lista de dependencias.
+             Es lo único que cubre todos los casos en que cambia el tamaño del contenido:
+             cambiar de nivel, de número de compases, agregar acordes, prender la cuenta,
+             o pasar de layout de móvil a escritorio. Antes solo se medía al montar y en
+             'resize', y ese listener corre ANTES de que React repinte el layout nuevo —
+             por eso la escala se quedaba vieja y el contenido se salía de la hoja.
+             No se usa ResizeObserver como mecanismo principal: sus callbacks dependen del
+             ciclo de pintado y no disparan si la pestaña no está componiendo cuadros. */
+          useEffect(() => { fit(); });
+
+          useEffect(() => {
+            const pending = [];
+            /* Al redimensionar hay que medir DOS veces: una de inmediato y otra en diferido.
+               El handler de 'resize' corre antes de que el navegador y React terminen de
+               reacomodar el layout, así que la primera medición todavía ve el ancho viejo —
+               ese era el caso en que el contenido se salía al cambiar el tamaño de ventana. */
+            const refit = () => {
+              fit();
+              pending.push(setTimeout(fit, 80), setTimeout(fit, 250));
+            };
+            window.addEventListener('resize', refit);
+            // re-medidas tras el montaje: fuentes web y layout que aún no ha asentado
+            pending.push(setTimeout(fit, 60), setTimeout(fit, 300));
+            return () => {
+              window.removeEventListener('resize', refit);
+              pending.forEach(clearTimeout);
+            };
+          }, []);
+          return (
+            <div ref={outerRef} style={{ width:'100%', display:'flex', justifyContent:'center', overflow:'hidden' }}>
+              <div ref={innerRef} style={{ transform:`scale(${scale})`, transformOrigin:'center top',
+                flexShrink:0,
+                height: scale < 1 ? undefined : 'auto',
+                // compensa el hueco que deja el escalado, con la altura real medida
+                // (antes era una constante de 230px que no correspondía a todos los casos)
+                marginBottom: scale < 1 ? `${-(1 - scale) * naturalH}px` : 0 }}>
+                {children}
+              </div>
+            </div>
+          );
+        };
+
         const StrummingPatternApp = () => {
           const [screen, setScreen] = useState(0); // 0 = menú de niveles, 1 = configuración, 2 = ejercicio
           const [level, setLevel] = useState(1);    // 1 = rasgueo básico (corcheas), 2 = funk (16vos)
@@ -1118,36 +1187,6 @@
             </div>
           );
 
-          // Escala el contenido para que quepa en el ancho disponible (móvil), midiendo dinámicamente.
-          // Funciona con cualquier número de flechas (8 o 16) sin depender de breakpoints fijos.
-          const ScaledBar = ({ children }) => {
-            const outerRef = useRef(null);
-            const innerRef = useRef(null);
-            const [scale, setScale] = useState(1);
-            useEffect(() => {
-              const fit = () => {
-                if (!outerRef.current || !innerRef.current) return;
-                const avail = outerRef.current.clientWidth;
-                const natural = innerRef.current.scrollWidth;
-                if (natural > 0) {
-                  const s = Math.min(1, avail / natural);
-                  setScale(s);
-                }
-              };
-              fit();
-              window.addEventListener('resize', fit);
-              const id = setTimeout(fit, 60); // re-mide tras el primer render
-              return () => { window.removeEventListener('resize', fit); clearTimeout(id); };
-            }, []);
-            return (
-              <div ref={outerRef} style={{ width:'100%', display:'flex', justifyContent:'center', overflow:'hidden' }}>
-                <div ref={innerRef} style={{ transform:`scale(${scale})`, transformOrigin:'center top',
-                  height: scale < 1 ? undefined : 'auto', marginBottom: scale < 1 ? `${-(1-scale)*230}px` : 0 }}>
-                  {children}
-                </div>
-              </div>
-            );
-          };
 
           /* ---------- Toggle bonito ---------- */
           const Toggle = ({ checked, onChange, label, hint }) => (
@@ -1356,14 +1395,20 @@
                 <div ref={exportRef} className="panel-sheet" style={{ borderRadius:'24px', padding: isMobile ? '28px 10px' : '48px 40px', marginBottom:'22px', overflowX:'hidden' }}>
                   <TitleCell isExporting={false} isMobile={isMobile} />
                   <div style={{ display:'flex', alignItems:'center', justifyContent:'center', flexDirection: (isMobile || config.numBars===4) ? 'column':'row', gap: (isMobile || config.numBars===4) ? (isMobile ? '8px' : '20px') :'0' }}>
+                    {/* ScaledBar envuelve TODOS los casos, no solo móvil: en escritorio los
+                        compases se dibujaban sin protección y, si la ventana era más angosta
+                        que el contenido (p. ej. nivel 1 con 2 o 4 compases por debajo de
+                        ~1100px), se salían de la hoja y overflowX:hidden los cortaba.
+                        Cuando el contenido sí cabe, ScaledBar deja la escala en 1 y no
+                        cambia nada. [2026-07-28] */}
                     {bars.length > 0 && (
                       isMobile
                         ? bars.map((_, i) => <ScaledBar key={i}><BarsRow idxs={[i]} /></ScaledBar>)
-                        : config.numBars === 1 ? <BarsRow idxs={[0]} /> :
-                          config.numBars === 2 ? <BarsRow idxs={[0,1]} /> :
+                        : config.numBars === 1 ? <ScaledBar><BarsRow idxs={[0]} /></ScaledBar> :
+                          config.numBars === 2 ? <ScaledBar><BarsRow idxs={[0,1]} /></ScaledBar> :
                           (<>
-                            <BarsRow idxs={[0,1]} />
-                            <BarsRow idxs={[2,3]} />
+                            <ScaledBar><BarsRow idxs={[0,1]} /></ScaledBar>
+                            <ScaledBar><BarsRow idxs={[2,3]} /></ScaledBar>
                           </>)
                     )}
                   </div>
