@@ -225,6 +225,14 @@
            Para volver a activarlo: cambiar a true. [2026-07-28] */
         const SHOW_LOAD_CONFIG = false;
 
+        /* 🚪 PUERTA DE ENTRADA — cuál de los dos gates se usa.
+           REQUIRE_PASSWORD: contraseña por bimestre (la de arriba). Apagada por ahora.
+           REQUIRE_EMAIL: pide correo y lo manda a Formspree antes de dejar entrar.
+           Poner las dos en false = app abierta sin ningún gate. [2026-07-28] */
+        const REQUIRE_PASSWORD = false;
+        const REQUIRE_EMAIL = true;
+        const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xojopljn';
+
         // Identificador del bimestre actual (p. ej. "2026-B1"). Cambia el día 1 cada 2 meses.
         const currentPeriodId = (d = new Date()) => {
           const y = d.getFullYear();
@@ -264,24 +272,28 @@
           const [checking, setChecking] = useState(true);
           const [input, setInput] = useState('');
           const [error, setError] = useState('');
+          const [sending, setSending] = useState(false);
           const periodId = currentPeriodId();
 
-          // al cargar: ¿hay un acceso guardado y válido para este período?
+          // al cargar: ¿ya tiene acceso guardado para el gate que esté activo?
           useEffect(() => {
             try {
-              const saved = localStorage.getItem('emq_access');
-              if (saved) {
-                const data = JSON.parse(saved);
-                if (data.period === periodId) { setOk(true); }
+              if (REQUIRE_PASSWORD) {
+                const saved = localStorage.getItem('emq_access');
+                if (saved && JSON.parse(saved).period === periodId) setOk(true);
+              } else if (REQUIRE_EMAIL) {
+                if (localStorage.getItem('emq_email')) setOk(true);
+              } else {
+                setOk(true);   // sin gate
               }
             } catch (e) {}
             setChecking(false);
           }, []);
 
-          const submit = async () => {
+          /* ---- gate de contraseña (apagado por ahora, se conserva completo) ---- */
+          const submitPassword = async () => {
             const expected = await passwordForPeriod(periodId);
             const given = input.trim().toUpperCase().replace(/\s+/g, '');
-            // aceptamos con o sin guiones
             const norm = (s) => s.replace(/-/g, '');
             if (norm(given) === norm(expected)) {
               try { localStorage.setItem('emq_access', JSON.stringify({ period: periodId })); } catch (e) {}
@@ -290,6 +302,30 @@
               setError('Contraseña incorrecta o vencida. Pide la del bimestre a @mercadoernesto.');
             }
           };
+
+          /* ---- gate de correo → Formspree ---- */
+          const submitEmail = async () => {
+            const email = input.trim();
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+              setError('Escribe un correo válido.');
+              return;
+            }
+            setSending(true);
+            try {
+              await fetch(FORMSPREE_ENDPOINT, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({ email, source: 'estudio-ritmico' })
+              });
+            } catch (e) {
+              // si la red o Formspree fallan NO bloqueamos al alumno: se pierde el lead, no la clase
+              console.error('No se pudo registrar el correo:', e);
+            }
+            try { localStorage.setItem('emq_email', JSON.stringify({ email, date: new Date().toISOString() })); } catch (e) {}
+            setSending(false); setError(''); setOk(true);
+          };
+
+          const submit = REQUIRE_PASSWORD ? submitPassword : submitEmail;
 
           if (checking) return null;
           if (ok) return children;
@@ -308,24 +344,40 @@
                   Estudio Rítmico
                 </h1>
                 <p style={{ color:'var(--muted)', fontSize:'14px', margin:'0 0 24px' }}>
-                  Introduce la contraseña del bimestre para entrar.
+                  {REQUIRE_PASSWORD
+                    ? 'Introduce la contraseña del bimestre para entrar.'
+                    : 'Déjame tu correo y entras.'}
                 </p>
-                <input type="text" value={input}
+                <input type={REQUIRE_PASSWORD ? 'text' : 'email'} value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === 'Enter') submit(); }}
-                  placeholder="XXXX-XXXX-XXXX"
+                  onKeyDown={(e) => { if (e.key === 'Enter' && !sending) submit(); }}
+                  placeholder={REQUIRE_PASSWORD ? 'XXXX-XXXX-XXXX' : 'tu@correo.com'}
                   autoFocus
-                  style={{ width:'100%', padding:'15px 16px', fontWeight:700, fontSize:'18px', letterSpacing:'.08em',
-                    textAlign:'center', textTransform:'uppercase', borderRadius:'14px',
+                  autoComplete="email"
+                  style={{ width:'100%', padding:'15px 16px', fontWeight:700,
+                    fontSize: REQUIRE_PASSWORD ? '18px' : '16px',
+                    letterSpacing: REQUIRE_PASSWORD ? '.08em' : 'normal',
+                    textAlign:'center',
+                    textTransform: REQUIRE_PASSWORD ? 'uppercase' : 'none',
+                    borderRadius:'14px',
                     border:'1px solid rgba(255,255,255,.12)', background:'rgba(255,255,255,.05)', color:'var(--txt)', outline:'none' }} />
                 {error && <p style={{ color:'#ff9aa6', fontSize:'13px', margin:'12px 0 0' }}>{error}</p>}
-                <button onClick={submit}
-                  className="btn btn-grad" style={{ width:'100%', padding:'15px', color:'#fff', fontSize:'16px', marginTop:'18px' }}>
-                  Entrar
+                <button onClick={submit} disabled={sending}
+                  className="btn btn-grad" style={{ width:'100%', padding:'15px', color:'#fff', fontSize:'16px', marginTop:'18px', opacity: sending ? .6 : 1, cursor: sending ? 'wait' : 'pointer' }}>
+                  {sending ? 'Un momento...' : 'Entrar'}
                 </button>
                 <p style={{ color:'var(--muted)', fontSize:'12px', margin:'18px 0 0' }}>
-                  Esta contraseña es válida hasta el {expStr}.<br/>
-                  ¿No tienes acceso? Escríbeme a <a href="https://instagram.com/mercadoernesto" target="_blank" rel="noopener noreferrer" style={{ color:'#bcd0ff', textDecoration:'none' }}>@mercadoernesto</a>
+                  {REQUIRE_PASSWORD ? (
+                    <>
+                      Esta contraseña es válida hasta el {expStr}.<br/>
+                      ¿No tienes acceso? Escríbeme a <a href="https://instagram.com/mercadoernesto" target="_blank" rel="noopener noreferrer" style={{ color:'#bcd0ff', textDecoration:'none' }}>@mercadoernesto</a>
+                    </>
+                  ) : (
+                    <>
+                      Sin spam. Te escribo solo cuando hay algo que vale la pena.<br/>
+                      <a href="https://instagram.com/mercadoernesto" target="_blank" rel="noopener noreferrer" style={{ color:'#bcd0ff', textDecoration:'none' }}>@mercadoernesto</a>
+                    </>
+                  )}
                 </p>
               </div>
             </div>
