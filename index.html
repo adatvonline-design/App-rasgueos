@@ -233,6 +233,22 @@
         const REQUIRE_EMAIL = true;
         const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xojopljn';
 
+        /* 🎁 LINK DIRECTO — `?d=1` salta la puerta.
+           Para los links que se mandan a mano a alguien cuyo correo YA se tiene (alumnos,
+           prospectos de WhatsApp, referidos): un formulario antes de dejar ver nada se lee
+           como cobro, no como regalo. La URL sin el parametro conserva el gate para el
+           trafico frio de Instagram (keyword RITMO), que es donde el correo si se gana.
+           Regla: la puerta se elige por como llega la persona, no por cuanto captura. [2026-08-21] */
+        const isDirectLink = () => {
+          let direct = false;
+          try { direct = new URLSearchParams(location.search).get('d') === '1'; } catch (e) {}
+          try {
+            if (direct) localStorage.setItem('emq_direct', '1');   // no se le vuelve a pedir en este navegador
+            else direct = localStorage.getItem('emq_direct') === '1';
+          } catch (e) {}   // modo privado: el parametro sigue sirviendo, solo no se recuerda
+          return direct;
+        };
+
         // Identificador del bimestre actual (p. ej. "2026-B1"). Cambia el día 1 cada 2 meses.
         const currentPeriodId = (d = new Date()) => {
           const y = d.getFullYear();
@@ -278,7 +294,9 @@
           // al cargar: ¿ya tiene acceso guardado para el gate que esté activo?
           useEffect(() => {
             try {
-              if (REQUIRE_PASSWORD) {
+              if (isDirectLink()) {
+                setOk(true);          // link directo: sin puerta
+              } else if (REQUIRE_PASSWORD) {
                 const saved = localStorage.getItem('emq_access');
                 if (saved && JSON.parse(saved).period === periodId) setOk(true);
               } else if (REQUIRE_EMAIL) {
