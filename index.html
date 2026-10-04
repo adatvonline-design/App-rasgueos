@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estudio Rítmico · Guitarra</title>
+    <title>Rasgueo·Lab · Guitarra</title>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>
@@ -169,7 +169,10 @@
 <body>
     <div id="root"></div>
 
-    <script type="text/babel">
+    <!-- PRESETS-DATOS:INICIO -->
+    <script id="presets-data" type="application/json">{"version":"1.0","capitulos":[{"id":1,"nivel":"gratis","titulo":"Antes del primer rasgueo","sub":"La mano que no se detiene"},{"id":2,"nivel":"gratis","titulo":"Tres patrones para empezar","sub":"Pop, rock y balada"},{"id":3,"nivel":"1","titulo":"Golpes y apagados","sub":"El rasgueo que también es batería"},{"id":4,"nivel":"1","titulo":"A contratiempo","sub":"Cumbia, reggae y ska"},{"id":5,"nivel":"1","titulo":"En tres","sub":"Vals y balada en 6/8"},{"id":6,"nivel":"2","titulo":"Bajo y rasgueo","sub":"Country, ranchera y bolero"},{"id":7,"nivel":"2","titulo":"Con la mano","sub":"Huapango, rumba y bossa nova"},{"id":8,"nivel":"2","titulo":"Semicorcheas y swing","sub":"Pop en 16vos, funk y shuffle"}],"patrones":[{"id":"E1","cap":1,"genero":"Ejercicio","nombre":"Negras hacia abajo","compas":"4/4","pulsos":4,"sub":2,"pendulo":true,"swing":false,"bpm":[60,80,100],"acordes":["G","C"],"compases":["D . D . D . D ."],"texto":["La mano baja en cada tiempo y sube sin tocar las cuerdas.","Lo que busco aquí no es el sonido, es el movimiento: el brazo va y viene como un péndulo, aunque solo toque de bajada."],"cuidar":"Que la subida sin tocar dure lo mismo que la bajada.","canciones":[]},{"id":"E2","cap":1,"genero":"Ejercicio","nombre":"Corcheas: abajo y arriba","compas":"4/4","pulsos":4,"sub":2,"pendulo":true,"swing":false,"bpm":[60,80,110],"acordes":["G","C"],"compases":["D U D U D U D U"],"texto":["Ahora toco también de subida. En el número la mano va hacia abajo y en la «y» va hacia arriba.","Es el mismo péndulo del ejercicio anterior, solo que las subidas ya suenan."],"cuidar":"La subida toca solo las cuerdas agudas. No hace falta llegar a la sexta.","canciones":[]},{"id":"E3","cap":1,"genero":"Ejercicio","nombre":"Acento en 2 y 4","compas":"4/4","pulsos":4,"sub":2,"pendulo":true,"swing":false,"bpm":[60,80,110],"acordes":["Am","F"],"compases":["D U >D U D U >D U"],"texto":["Las mismas corcheas, pero en el 2 y en el 4 toco más fuerte.","Es donde la batería pone la tarola, así que con el acento la guitarra ya suena acompañada."],"cuidar":"El acento sale de tocar más fuerte, no de acelerar.","canciones":[]},{"id":"E4","cap":1,"genero":"Ejercicio","nombre":"Semicorcheas","compas":"4/4","pulsos":4,"sub":4,"pendulo":true,"swing":false,"bpm":[50,60,80],"acordes":["Em"],"compases":["D U D U D U D U D U D U D U D U"],"texto":["Cuatro golpes por tiempo: to, ma, te, lo. La mano va al doble de velocidad y el número sigue cayendo de bajada.","Este ejercicio prepara el funk y el pop en semicorcheas del nivel 2."],"cuidar":"Empezar lento. Si el brazo se tensa, el tempo está muy alto.","canciones":[]},{"id":"P01","cap":2,"genero":"Pop y folk","nombre":"El de siempre","compas":"4/4","pulsos":4,"sub":2,"pendulo":true,"swing":false,"bpm":[70,96,120],"acordes":["G","D","Em","C"],"compases":["D . D U . U D U"],"texto":["Es el patrón que más se repite en la guitarra acústica: abajo, abajo-arriba, arriba-abajo-arriba.","El truco está en el 3: ahí la mano baja sin tocar, y eso hace que la subida del «3 y» se sienta adelantada."],"cuidar":"En el 3 la mano baja igual. Si se detiene, el patrón se desacomoda.","canciones":[{"c":"Riptide","a":"Vance Joy"},{"c":"I'm Yours","a":"Jason Mraz"},{"c":"Ho Hey","a":"The Lumineers"},{"c":"Como la flor","a":"Selena","nota":"con acento en las «y», ver la cumbia del capítulo 4"}]},{"id":"P02","cap":2,"genero":"Rock","nombre":"Corcheas hacia abajo","compas":"4/4","pulsos":4,"sub":2,"pendulo":false,"swing":false,"bpm":[100,140,176],"acordes":["A5","D5","E5"],"compases":["D D D D D D D D"],"texto":["Aquí todo es de bajada: ocho golpes por compás, todos hacia abajo.","Suena más pesado que abajo-arriba porque cada golpe entra con el mismo peso. Lo uso con quintas, o lo que es lo mismo, power chords."],"cuidar":"La muñeca hace el trabajo. El brazo casi no se mueve.","canciones":[{"c":"Blitzkrieg Bop","a":"Ramones"}]},{"id":"P03","cap":2,"genero":"Balada","nombre":"Abajo, abajo-arriba","compas":"4/4","pulsos":4,"sub":2,"pendulo":true,"swing":false,"bpm":[60,72,90],"acordes":["C","G","Am","F"],"compases":["D . D U D . D U"],"texto":["Un golpe largo en el 1 y un abajo-arriba en el 2. Luego se repite en el 3 y el 4.","Deja mucho aire entre golpes, por eso funciona en canciones lentas donde la voz necesita espacio."],"cuidar":"El golpe del 1 se deja sonar completo.","canciones":[{"c":"Let It Be","a":"The Beatles"},{"c":"Stand By Me","a":"Ben E. King"}]},{"id":"N1-01","cap":3,"genero":"Pop acústico","nombre":"Con golpe en 2 y 4","compas":"4/4","pulsos":4,"sub":2,"pendulo":true,"swing":false,"bpm":[80,100,120],"acordes":["C","Am","F","G"],"compases":["D . X U . U X U"],"texto":["Es «el de siempre» del capítulo 2, pero en el 2 y en el 4 el rasgueo se apaga.","¿Cómo lo hago? La mano baja y en el mismo movimiento la palma cae sobre las cuerdas. Suena un chasquido, como una tarola."],"cuidar":"El golpe es corto. La palma cae junto con el rasgueo, no después.","canciones":[{"c":"Better Together","a":"Jack Johnson"},{"c":"Proud Mary","a":"Creedence Clearwater Revival"}]},{"id":"N1-02","cap":3,"genero":"Rock","nombre":"Palm mute con acento","compas":"4/4","pulsos":4,"sub":2,"pendulo":false,"swing":false,"bpm":[100,140,176],"acordes":["E5","A5","B5"],"compases":[">D M M M >D M M M"],"texto":["Las mismas corcheas hacia abajo, ahora con la palma apoyada en el puente. Eso es el palm mute, o lo que es lo mismo, apagar con la palma.","En el 1 y en el 3 levanto la palma y el acorde suena abierto. El contraste entre abierto y apagado es lo que da la energía."],"cuidar":"La palma va sobre el puente. Si se recorre hacia el mástil, el acorde ya no suena.","canciones":[{"c":"Basket Case","a":"Green Day"}]},{"id":"N1-03","cap":4,"genero":"Cumbia","nombre":"Acento en las «y»","compas":"4/4","pulsos":4,"sub":2,"pendulo":true,"swing":false,"bpm":[90,100,110],"acordes":["Am","G","C","E"],"compases":["D . D >U . >U D >U"],"texto":["Es el mismo dibujo de «el de siempre». Lo que cambia es el acento: ahora las subidas suenan más fuerte que las bajadas.","Con ese cambio la cumbia aparece sola. El género no lo decide el patrón, lo decide dónde cae el acento."],"cuidar":"Las bajadas van suaves. Si suenan igual que las subidas, se pierde el bailable.","canciones":[{"c":"Como la flor","a":"Selena"},{"c":"Cómo te voy a olvidar","a":"Los Ángeles Azules"},{"c":"Nunca es suficiente","a":"Los Ángeles Azules y Natalia Lafourcade"}]},{"id":"N1-04","cap":4,"genero":"Reggae","nombre":"El skank en 2 y 4","compas":"4/4","pulsos":4,"sub":2,"pendulo":true,"swing":false,"bpm":[60,72,84],"acordes":["A","D","E"],"compases":[". . D* . . . D* ."],"texto":["En el reggae la guitarra casi no toca: un golpe corto en el 2 y otro en el 4. Ese golpe se llama skank.","Toco solo las cuerdas agudas y apago el acorde enseguida, aflojando la mano izquierda. El bajo y la batería llenan el resto."],"cuidar":"Corto de verdad. Si el acorde se queda sonando, ya no es reggae.","canciones":[{"c":"Three Little Birds","a":"Bob Marley"},{"c":"Is This Love","a":"Bob Marley"},{"c":"La complicidad","a":"Cultura Profética"}]},{"id":"N1-05","cap":4,"genero":"Ska","nombre":"Arriba en cada «y»","compas":"4/4","pulsos":4,"sub":2,"pendulo":true,"swing":false,"bpm":[110,140,170],"acordes":["C","Am","F","G"],"compases":[". U* . U* . U* . U*"],"texto":["El ska es el pariente rápido del reggae. El golpe corto ya no cae en el 2 y el 4, cae en todas las «y».","La mano baja sin tocar en cada número y sube tocando en cada «y». Como en el reggae, cada subida se apaga enseguida."],"cuidar":"La bajada sin tocar mantiene el tiempo. Sin ella las subidas se adelantan.","canciones":[{"c":"La dosis perfecta","a":"Panteón Rococó"}]},{"id":"N1-06","cap":5,"genero":"Vals","nombre":"Tres golpes, acento en el 1","compas":"3/4","pulsos":3,"sub":1,"pendulo":false,"swing":false,"bpm":[80,100,132],"acordes":["C","G","F"],"compases":[">D D D"],"texto":["En 3/4 cuento uno, dos, tres. Toco hacia abajo en los tres y el 1 va más fuerte.","Con ese acento ya se entiende que es un vals, aunque los tres golpes sean iguales."],"cuidar":"El 2 y el 3 van más suaves que el 1, nunca más fuertes.","canciones":[{"c":"Piano Man","a":"Billy Joel"}]},{"id":"N1-07","cap":5,"genero":"Balada en 6/8","nombre":"Seis corcheas","compas":"6/8","pulsos":2,"sub":3,"pendulo":false,"swing":false,"bpm":[50,63,76],"acordes":["G","Em","C","D"],"compases":[">D D D >D D D"],"texto":["En 6/8 cuento seis corcheas y el pulso cae en el 1 y en el 4. Toco las seis hacia abajo y acentúo esas dos.","Se siente como un vals lento que se mece. El tempo de este patrón se cuenta en esos dos pulsos, no en las seis corcheas."],"cuidar":"Que el 4 se sienta como un segundo 1, más suave.","canciones":[{"c":"Perfect","a":"Ed Sheeran"},{"c":"Hallelujah","a":"Leonard Cohen"},{"c":"Todo cambió","a":"Camila"}]},{"id":"N2-01","cap":6,"genero":"Country","nombre":"Bajo y rasgueo","compas":"4/4","pulsos":4,"sub":2,"pendulo":true,"swing":false,"bpm":[90,110,140],"acordes":["G","C","D"],"compases":["B . D U b . D U"],"texto":["En el 1 toco solo la nota grave del acorde y en el 2 rasgueo abajo-arriba. En el 3 toco otra vez un bajo, ahora la quinta del acorde.","¿Cómo encuentro la quinta? En G el bajo es la sexta cuerda y la quinta es la cuerda de al lado, la cuarta al aire."],"cuidar":"El bajo suena solo. Si rozo otras cuerdas, se pierde el «bum».","canciones":[{"c":"Folsom Prison Blues","a":"Johnny Cash"},{"c":"I Walk the Line","a":"Johnny Cash"}]},{"id":"N2-02","cap":6,"genero":"Ranchera en 2/4","nombre":"Polka o corrido","compas":"2/4","pulsos":2,"sub":2,"pendulo":false,"swing":false,"bpm":[100,120,140],"acordes":["G","D7"],"compases":["B D b D"],"texto":["Es el «pun-cha, pun-cha» de la música norteña: un bajo en cada tiempo y el acorde en cada «y», siempre hacia abajo.","Alterno el bajo entre la raíz y la quinta, igual que en el country. Lo que cambia es el compás: aquí son dos tiempos."],"cuidar":"El rasgueo de la «y» es corto y seco, para que el bajo se oiga.","canciones":[{"c":"Contrabando y traición","a":"Los Tigres del Norte"}]},{"id":"N2-03","cap":6,"genero":"Ranchera valseada","nombre":"Bajo, rasgueo, rasgueo","compas":"3/4","pulsos":3,"sub":1,"pendulo":false,"swing":false,"bpm":[90,120,150],"acordes":["C","G7"],"compases":["B D D","b D D"],"texto":["El vals del nivel 1, ahora con bajo: en el 1 la nota grave y en el 2 y el 3 el acorde hacia abajo.","Son dos compases porque el bajo alterna: raíz en el primero y quinta en el segundo."],"cuidar":"El bajo del 1 dura todo el compás. No lo apago al rasguear.","canciones":[{"c":"Cielito lindo","a":"Quirino Mendoza y Cortés"},{"c":"El Rey","a":"José Alfredo Jiménez"}]},{"id":"N2-04","cap":6,"genero":"Bolero","nombre":"Bajo en 1 y 3, respuesta en la «y»","compas":"4/4","pulsos":4,"sub":2,"pendulo":true,"swing":false,"bpm":[66,76,88],"acordes":["Am","Dm","E7"],"compases":["B . . U b . . U"],"texto":["En el bolero el bajo marca el 1 y el 3. El acorde responde suave en la «y» del 2 y en la «y» del 4.","La mano sigue su péndulo: baja sin tocar en el 2 y en el 4, y toca de subida justo después."],"cuidar":"Las respuestas van suaves. Son la sombra del bajo, no el golpe principal.","canciones":[{"c":"Bésame mucho","a":"Consuelo Velázquez"},{"c":"Sabor a mí","a":"Álvaro Carrillo"},{"c":"Perfidia","a":"Alberto Domínguez"}]},{"id":"N2-05","cap":7,"genero":"Huapango","nombre":"Abanico y apagón","compas":"6/8","pulsos":2,"sub":3,"pendulo":false,"swing":false,"bpm":[56,66,80],"acordes":["A","E7","D"],"compases":["D F - X U D"],"texto":["En la corchea 1 bajo con tres dedos juntos y en la 2 abro el abanico: anular, medio e índice, uno tras otro, y lo dejo sonar dos corcheas.","En la 4 los dedos caen sobre las cuerdas y las apagan, el apagón. Cierro con un arriba-abajo en la 5 y la 6."],"cuidar":"El abanico se escucha nota por nota. Si suena como un solo golpe, los dedos están saliendo juntos.","canciones":[{"c":"Cucurrucucú paloma","a":"Tomás Méndez"},{"c":"La Malagueña","a":"Miguel Aceves Mejía"},{"c":"Serenata huasteca","a":"José Alfredo Jiménez"}]},{"id":"N2-06","cap":7,"genero":"Rumba flamenca","nombre":"El 3 en silencio","compas":"4/4","pulsos":4,"sub":2,"pendulo":true,"swing":false,"bpm":[90,110,130],"acordes":["Am","G","F","E"],"compases":["D U >D U . U >D U"],"texto":["Todas las bajadas tocan menos la del 3, y todas las subidas tocan. El 2 y el 4 van acentuados.","Lo toco con los dedos: medio y anular hacia abajo, la yema del pulgar hacia arriba. Con la mano en giro, como quien abre una perilla."],"cuidar":"En el 3 la mano baja igual, sin tocar.","canciones":[{"c":"Bamboléo","a":"Gipsy Kings"},{"c":"Entre dos aguas","a":"Paco de Lucía"}]},{"id":"N2-07","cap":7,"genero":"Bossa nova","nombre":"Pulgar y dedos","compas":"2/4","pulsos":2,"sub":4,"pendulo":false,"swing":false,"bpm":[60,70,84],"acordes":["Am7","D7"],"compases":["K . C . b C . ."],"texto":["El pulgar toca el bajo en cada tiempo: raíz en el 1 y quinta en el 2. Nunca se detiene.","Los dedos pinzan el acorde con el pulgar en el 1, solos en la «y» del 1, y luego en el «ma» del 2, una semicorchea después del pulgar."],"cuidar":"Primero el pulgar solo, hasta que camine sin pensarlo. Después entran los dedos.","canciones":[{"c":"Garota de Ipanema","a":"Antônio Carlos Jobim"},{"c":"Desafinado","a":"Antônio Carlos Jobim"},{"c":"Corcovado","a":"Antônio Carlos Jobim"}]},{"id":"N2-08","cap":8,"genero":"Pop en semicorcheas","nombre":"El de siempre, al doble","compas":"4/4","pulsos":4,"sub":4,"pendulo":true,"swing":false,"bpm":[70,87,100],"acordes":["Em7","G","Dsus4","A7sus4"],"compases":["D . D U . U D U D . D U . U D U"],"texto":["Tomo «el de siempre» del capítulo 2 y lo meto en medio compás. La mano ya va en semicorcheas, to-ma-te-lo, y el dibujo se repite dos veces.","Así es como se mueve la mano en canciones que suenan llenas sin ir rápido."],"cuidar":"La mano no deja de moverse en semicorcheas, aunque no toque.","canciones":[{"c":"Wonderwall","a":"Oasis","nota":"el movimiento continuo en semicorcheas"}]},{"id":"N2-09","cap":8,"genero":"Funk","nombre":"Rascado en 16vos","compas":"4/4","pulsos":4,"sub":4,"pendulo":true,"swing":false,"bpm":[80,96,110],"acordes":["E9"],"compases":[">D X X X X X >D X X >U X X X X X X"],"texto":["Todas las semicorcheas suenan, pero casi todas apagadas: la mano izquierda descansa sobre las cuerdas sin apretar. Eso es el chicken scratch, o el rascado.","Solo tres golpes dejan sonar el acorde: el 1, la «te» del 2 y el «ma» del 3. Aprieto el acorde justo en ese golpe y lo vuelvo a soltar."],"cuidar":"La derecha nunca cambia: siempre 16 golpes. La que decide qué suena es la izquierda.","canciones":[{"c":"Sex Machine","a":"James Brown","nota":"el estilo de rascado de Jimmy Nolen"},{"c":"Get Lucky","a":"Daft Punk con Nile Rodgers","nota":"semicorcheas cortas"}]},{"id":"N2-10","cap":8,"genero":"Shuffle","nombre":"Corcheas en swing","compas":"4/4","pulsos":4,"sub":2,"pendulo":true,"swing":true,"bpm":[100,120,150],"acordes":["E7","A7","B7"],"compases":["D U >D U D U >D U"],"texto":["Es el ejercicio de acento en 2 y 4 con un cambio: la «y» llega tarde. Cada tiempo se divide en tres y la subida cae en el tercero.","¿Qué significa eso? Que en vez de «1 y 2 y» se siente «1 –a 2 –a». Ese retraso es el swing."],"cuidar":"La subida espera. Si cae a la mitad del tiempo, es rock otra vez.","canciones":[{"c":"Pride and Joy","a":"Stevie Ray Vaughan"},{"c":"Rock Around the Clock","a":"Bill Haley & His Comets"}]}]}</script>
+    <!-- PRESETS-DATOS:FIN -->
+<script type="text/babel">
         const { useState, useRef, useEffect } = React;
 
         /* ---------- Iconos ---------- */
@@ -359,7 +362,7 @@
                 </div>
                 <h1 style={{ fontSize:'30px', fontWeight:800, lineHeight:1.1, margin:'0 0 10px',
                   background:'linear-gradient(135deg,#bcd0ff,#cdb6ff)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent' }}>
-                  Estudio Rítmico
+                  Rasgueo·Lab
                 </h1>
                 <p style={{ color:'var(--muted)', fontSize:'14px', margin:'0 0 24px' }}>
                   {REQUIRE_PASSWORD
@@ -471,8 +474,357 @@
           );
         };
 
+/* PRESETS-JSX:INICIO */
+        /* ============================================================
+           RITMOS DEL MÉTODO — los presets del Método de rasgueos
+           ------------------------------------------------------------
+           Fuente: tools/metodo_rasgueos_datos.json del vault (cerebro-wiki).
+           Lo inyecta tools/construir_presets_app.py entre las marcas
+           PRESETS-DATOS y PRESETS-JSX. No se edita a mano aquí: se edita el
+           JSON o apps/app-rasgueos/presets.jsx del vault y se vuelve a construir.
+           Mismas fichas y mismo dibujo que el PDF: D U . X M B b F C K - > *
+           ============================================================ */
+        const PRESETS = (() => {
+          try { return JSON.parse(document.getElementById('presets-data').textContent); }
+          catch (e) { return { capitulos: [], patrones: [] }; }
+        })();
+
+        const FICHA_RE = /^(>)?([DUXMBbFCK.\-])(\*)?$/;
+        const leerFichas = (compas) => compas.trim().split(/\s+/).map((t) => {
+          const m = FICHA_RE.exec(t) || [null, null, '.', null];
+          return { acento: !!m[1], g: m[2], corto: !!m[3] };
+        });
+
+        /* ---------- Dibujo: el mismo de tools/metodo_rasgueos.py ---------- */
+        const P_TINTA = '#141b2b', P_GRIS = '#5a6477', P_AIRE = '#b9c0cc', P_ACENTO = '#d9480f';
+        const flechaSvg = (cx, abajo, relleno, color, y1 = 20, y2 = 72) => {
+          const s = 2.1, h = 8.5;
+          const pts = abajo
+            ? [[cx - s, y1], [cx + s, y1], [cx + s, y2 - 12], [cx + h, y2 - 12], [cx, y2], [cx - h, y2 - 12], [cx - s, y2 - 12]]
+            : [[cx - s, y2], [cx + s, y2], [cx + s, y1 + 12], [cx + h, y1 + 12], [cx, y1], [cx - h, y1 + 12], [cx - s, y1 + 12]];
+          const d = 'M' + pts.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' L') + ' Z';
+          return relleno ? `<path d="${d}" fill="${color}"/>`
+            : `<path d="${d}" fill="none" stroke="${color}" stroke-width="1.3" stroke-linejoin="round"/>`;
+        };
+        const simboloSvg = (f, cx, k, p, prevCx) => {
+          const g = f.g; let o = '';
+          const abajo = p.pendulo ? (k % 2 === 0) : true;
+          if (f.acento) o += `<path d="M${cx - 6},5 L${cx + 6},10 L${cx - 6},15" fill="none" stroke="${P_ACENTO}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>`;
+          if (g === 'D') o += flechaSvg(cx, true, true, P_TINTA);
+          else if (g === 'U') o += flechaSvg(cx, false, true, P_TINTA);
+          else if (g === '.') { if (p.pendulo) o += flechaSvg(cx, abajo, false, P_AIRE); }
+          else if (g === 'X') {
+            o += flechaSvg(cx, abajo, false, P_TINTA);
+            o += `<path d="M${cx - 7},39 L${cx + 7},53 M${cx + 7},39 L${cx - 7},53" stroke="${P_ACENTO}" stroke-width="2.4" stroke-linecap="round"/>`;
+          } else if (g === 'M') {
+            o += flechaSvg(cx, true, true, P_GRIS);
+            if (!f.acento) o += `<text x="${cx}" y="14" text-anchor="middle" font-size="9" font-weight="600" fill="${P_GRIS}">pm</text>`;
+          } else if (g === 'F') {
+            [-6, 0, 6].forEach((dx, i) => {
+              const yy = 20 + i * 6;
+              o += `<path d="M${cx + dx},${yy} L${cx + dx},${yy + 36}" stroke="${P_TINTA}" stroke-width="1.6"/>`
+                + `<path d="M${cx + dx - 3.5},${yy + 32} L${cx + dx},${yy + 39} L${cx + dx + 3.5},${yy + 32}" fill="${P_TINTA}"/>`;
+            });
+          } else if (g === 'C' || g === 'K') o += `<rect x="${cx - 7}" y="28" width="14" height="30" rx="4" fill="${P_TINTA}"/>`;
+          else if (g === '-') {
+            const x0 = prevCx != null ? prevCx + 9 : cx - 14;
+            o += `<path d="M${x0},46 L${cx + 6},46" stroke="${P_TINTA}" stroke-width="2.2" stroke-linecap="round"/>`;
+          }
+          if (g === 'B' || g === 'b' || g === 'K') {
+            const lleno = g !== 'b';
+            o += `<circle cx="${cx}" cy="86" r="9" fill="${lleno ? P_TINTA : '#fff'}" stroke="${P_TINTA}" stroke-width="1.6"/>`
+              + `<text x="${cx}" y="90.2" text-anchor="middle" font-size="11.5" font-weight="700" fill="${lleno ? '#fff' : P_TINTA}">${g === 'b' ? '5' : '1'}</text>`;
+          }
+          if (f.corto) o += `<circle cx="${cx}" cy="80" r="2.6" fill="${P_TINTA}"/>`;
+          return o;
+        };
+        const conteoDe = (p, k) => {
+          const sub = p.sub, b = Math.floor(k / sub), s = k % sub;
+          if (p.compas === '6/8') return [String(k + 1), true];
+          if (sub === 1) return [String(b + 1), true];
+          if (sub === 2) return s === 0 ? [String(b + 1), true] : ['y', false];
+          return s === 0 ? [String(b + 1), true] : [['ma', 'te', 'lo'][s - 1], false];
+        };
+        /* Devuelve { svg, ancho, alto, centros } — centros[compás][paso] = x, para resaltar el golpe que suena */
+        const gridSvg = (p, actual) => {
+          const sub = p.sub, pulsos = p.pulsos;
+          const w = { 1: 50, 2: 34, 3: 38, 4: 25 }[sub];
+          const gb = 8, gbar = 26, pad = 14, n = pulsos * sub;
+          const anchoC = n * w + (pulsos - 1) * gb;
+          const W = pad * 2 + p.compases.length * anchoC + (p.compases.length - 1) * gbar, H = 118;
+          let o = '', x = pad;
+          p.compases.forEach((c, ci) => {
+            const fs = leerFichas(c);
+            o += `<path d="M${x - 7},20 L${x - 7},98" stroke="${ci === 0 ? P_TINTA : P_GRIS}" stroke-width="${ci === 0 ? 2.4 : 1.4}"/>`;
+            let prev = null;
+            fs.forEach((f, k) => {
+              const b = Math.floor(k / sub), s = k % sub;
+              const cx = x + b * gb + k * w + w / 2;
+              if (s === 0 && b > 0) o += `<path d="M${cx - w / 2 - gb / 2},24 L${cx - w / 2 - gb / 2},94" stroke="#e3e6ec" stroke-width="1"/>`;
+              if (actual && actual[0] === ci && actual[1] === k)
+                o += `<rect x="${cx - w / 2 + 1}" y="2" width="${w - 2}" height="100" rx="6" fill="#ffe6d6"/>`;
+              o += simboloSvg(f, cx, k, p, prev);
+              const [lbl, fuerte] = conteoDe(p, k);
+              o += `<text x="${cx}" y="114" text-anchor="middle" font-size="${fuerte ? 13 : 11}" font-weight="${fuerte ? 700 : 500}" fill="${fuerte ? P_TINTA : P_GRIS}">${lbl}</text>`;
+              prev = cx;
+            });
+            x += anchoC + gbar;
+          });
+          const fin = x - gbar + 7;
+          o += `<path d="M${fin},20 L${fin},98" stroke="${P_TINTA}" stroke-width="2.4"/><path d="M${fin - 5},20 L${fin - 5},98" stroke="${P_TINTA}" stroke-width="1"/>`
+            + `<circle cx="${fin - 10}" cy="48" r="2" fill="${P_TINTA}"/><circle cx="${fin - 10}" cy="68" r="2" fill="${P_TINTA}"/>`;
+          return { svg: `<svg viewBox="0 0 ${Math.round(W)} ${H}" width="${Math.round(W)}" height="${H}" font-family="Inter, Arial, sans-serif" style="display:block;max-width:none">${o}</svg>`, ancho: W };
+        };
+
+        /* ---------- Sonido: acorde de guitarra sintetizado ---------- */
+        const NOTA_PC = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
+        const notasDe = (nombre) => {
+          const m = /^([A-G])([#b♯♭]?)(.*)$/.exec(nombre || 'G') || ['', 'G', '', ''];
+          const pc = (NOTA_PC[m[1]] + (/[#♯]/.test(m[2]) ? 1 : /[b♭]/.test(m[2]) ? -1 : 0) + 12) % 12;
+          const q = m[3] || '';
+          let iv;
+          if (/^5/.test(q)) iv = [0, 7, 12];
+          else if (/sus4/.test(q)) iv = /7/.test(q) ? [0, 7, 10, 17, 19] : [0, 7, 12, 17, 19];
+          else if (/^m(?!aj)/.test(q)) iv = /7/.test(q) ? [0, 7, 10, 15, 19] : [0, 7, 12, 15, 19, 24];
+          else if (/maj7/.test(q)) iv = [0, 7, 11, 16, 19];
+          else if (/9/.test(q)) iv = [0, 7, 10, 14, 16];
+          else if (/7/.test(q)) iv = [0, 7, 10, 16, 19];
+          else iv = [0, 7, 12, 16, 19, 24];
+          const raiz = 40 + ((pc - 4 + 12) % 12);           // de E2 a D#3
+          return { acorde: iv.map((i) => raiz + i), raiz, quinta: raiz + 7 };
+        };
+
+        const PresetsLibrary = ({ onBack }) => {
+          const pats = PRESETS.patrones || [];
+          const caps = PRESETS.capitulos || [];
+          const inicial = (() => {
+            try { const id = new URLSearchParams(location.search).get('preset'); if (pats.some((p) => p.id === id)) return id; } catch (e) {}
+            return pats[0] ? pats[0].id : null;
+          })();
+          const [sel, setSel] = useState(inicial);
+          const p = pats.find((x) => x.id === sel) || pats[0];
+          const [bpm, setBpm] = useState(p ? p.bpm[0] : 80);
+          const [playing, setPlaying] = useState(false);
+          const [actual, setActual] = useState(null);       // [compás, paso]
+          const [acordeIdx, setAcordeIdx] = useState(0);
+          const [cuenta, setCuenta] = useState(0);
+          const [conClick, setConClick] = useState(true);
+          const [conGuitarra, setConGuitarra] = useState(true);
+          const ctxRef = useRef(null), runRef = useRef(null), bpmRef = useRef(bpm);
+          const clickRef = useRef(conClick), guitRef = useRef(conGuitarra);
+          useEffect(() => { bpmRef.current = bpm; }, [bpm]);
+          useEffect(() => { clickRef.current = conClick; }, [conClick]);
+          useEffect(() => { guitRef.current = conGuitarra; }, [conGuitarra]);
+          useEffect(() => () => detener(), []);
+          const cambiar = (id) => {
+            detener();
+            const q = pats.find((x) => x.id === id);
+            setSel(id); if (q) setBpm(q.bpm[0]);
+            try { const u = new URL(location.href); u.searchParams.set('preset', id); history.replaceState(null, '', u); } catch (e) {}
+            setTimeout(() => { const el = document.getElementById('preset-player'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 30);
+          };
+
+          const salida = (ctx) => {
+            if (!ctx._sal) { const g = ctx.createGain(); g.gain.value = 0.9; g.connect(ctx.destination); ctx._sal = g; }
+            return ctx._sal;
+          };
+          const cuerda = (ctx, t, midi, g, dur, brillo = 7) => {
+            const f = 440 * Math.pow(2, (midi - 69) / 12);
+            const o = ctx.createOscillator(); o.type = 'sawtooth'; o.frequency.value = f;
+            const lp = ctx.createBiquadFilter(); lp.type = 'lowpass';
+            lp.frequency.setValueAtTime(Math.min(9000, f * brillo), t);
+            lp.frequency.exponentialRampToValueAtTime(Math.max(180, f * 1.2), t + dur);
+            const v = ctx.createGain();
+            v.gain.setValueAtTime(0.0001, t); v.gain.exponentialRampToValueAtTime(g, t + 0.004);
+            v.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+            o.connect(lp); lp.connect(v); v.connect(salida(ctx)); o.start(t); o.stop(t + dur + 0.03);
+          };
+          const ruido = (ctx, t, g, dur, fc) => {
+            const buf = ctx.createBuffer(1, Math.floor(ctx.sampleRate * dur), ctx.sampleRate);
+            const d = buf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+            const src = ctx.createBufferSource(); src.buffer = buf;
+            const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = fc; bp.Q.value = 0.9;
+            const v = ctx.createGain(); v.gain.setValueAtTime(g, t); v.gain.exponentialRampToValueAtTime(0.001, t + dur);
+            src.connect(bp); bp.connect(v); v.connect(salida(ctx)); src.start(t); src.stop(t + dur);
+          };
+          const clic = (ctx, t, fuerte) => {
+            const o = ctx.createOscillator(), v = ctx.createGain(); o.type = 'square';
+            o.frequency.value = fuerte ? 1260 : 880;
+            v.gain.setValueAtTime(fuerte ? 0.16 : 0.09, t); v.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
+            o.connect(v); v.connect(salida(ctx)); o.start(t); o.stop(t + 0.06);
+          };
+          const golpe = (ctx, t, f, k, q, nombre, pasoDur) => {
+            const { acorde, raiz, quinta } = notasDe(nombre);
+            const abajo = q.pendulo ? (k % 2 === 0) : true;
+            const vol = f.acento ? 1.45 : 1;
+            const largo = f.corto ? 0.09 : Math.max(0.25, Math.min(1.4, pasoDur * 6));
+            const rasgar = (notas, sep, g, dur, brillo) => notas.forEach((m, i) => cuerda(ctx, t + i * sep, m, g, dur, brillo));
+            switch (f.g) {
+              case 'D': rasgar(acorde, 0.011, 0.07 * vol, largo); break;
+              case 'U': rasgar(acorde.slice(-4).reverse(), 0.009, 0.055 * vol, largo); break;
+              case 'X': ruido(ctx, t, 0.35 * vol, 0.045, 2400); rasgar((abajo ? acorde : acorde.slice().reverse()).slice(0, 4), 0.006, 0.02, 0.04, 3); break;
+              case 'M': rasgar(acorde.slice(0, 3), 0.008, 0.08 * vol, 0.11, 3); break;
+              case 'B': cuerda(ctx, t, raiz, 0.16 * vol, largo * 1.2, 5); break;
+              case 'b': cuerda(ctx, t, quinta, 0.15 * vol, largo * 1.2, 5); break;
+              case 'C': rasgar(acorde.slice(-3), 0.002, 0.07 * vol, f.corto ? 0.09 : 0.5, 4); break;
+              case 'K': cuerda(ctx, t, raiz, 0.16, 0.7, 5); rasgar(acorde.slice(-3), 0.002, 0.07 * vol, 0.5, 4); break;
+              case 'F': [0, 0.035, 0.07].forEach((dt) => acorde.forEach((m, i) => cuerda(ctx, t + dt + i * 0.006, m, 0.045 * vol, largo, 6))); break;
+              default: break;
+            }
+          };
+
+          const detener = () => {
+            const r = runRef.current;
+            if (r) { r.stop = true; clearInterval(r.timer); r.timeouts.forEach(clearTimeout); }
+            runRef.current = null; setPlaying(false); setActual(null); setCuenta(0);
+          };
+          const tocar = () => {
+            if (!p) return;
+            if (!ctxRef.current) ctxRef.current = new (window.AudioContext || window.webkitAudioContext)();
+            const ctx = ctxRef.current; if (ctx.state === 'suspended') ctx.resume();
+            const q = p, fichasC = q.compases.map(leerFichas);
+            const n = q.pulsos * q.sub;
+            const run = { stop: false, timeouts: [], timer: null };
+            runRef.current = run; setPlaying(true);
+            const pulso = () => 60 / bpmRef.current;
+            let t = ctx.currentTime + 0.12;
+            for (let i = 0; i < q.pulsos; i++) {           // un compás de cuenta
+              clic(ctx, t, i === 0);
+              const ms = (t - ctx.currentTime) * 1000;
+              run.timeouts.push(setTimeout(() => !run.stop && setCuenta(i + 1), Math.max(0, ms)));
+              t += pulso();
+            }
+            run.timeouts.push(setTimeout(() => !run.stop && setCuenta(0), Math.max(0, (t - ctx.currentTime) * 1000)));
+            let paso = 0, inicioPulso = t;
+            const agenda = () => {
+              while (!run.stop && t < ctx.currentTime + 0.12) {
+                const glob = Math.floor(paso / n), ci = glob % q.compases.length, k = paso % n;
+                const b = Math.floor(k / q.sub), s = k % q.sub;
+                if (s === 0) inicioPulso = t;
+                const pd = pulso() / q.sub;
+                if (s === 0 && clickRef.current) clic(ctx, t, b === 0);
+                const nombre = q.acordes[glob % q.acordes.length];
+                if (guitRef.current) golpe(ctx, t, fichasC[ci][k], k, q, nombre, pd);
+                const ms = (t - ctx.currentTime) * 1000;
+                const marca = [ci, k], ai = glob % q.acordes.length;
+                run.timeouts.push(setTimeout(() => { if (!run.stop) { setActual(marca); setAcordeIdx(ai); } }, Math.max(0, ms)));
+                paso++;
+                const k2 = paso % n, s2 = k2 % q.sub;
+                if (s2 === 0) t = inicioPulso + pulso();
+                else if (q.swing && q.sub === 2) t = inicioPulso + pulso() * (2 / 3);
+                else t = inicioPulso + pd * s2;
+              }
+              if (run.timeouts.length > 400) run.timeouts.splice(0, 200);
+            };
+            run.timer = setInterval(agenda, 25); agenda();
+          };
+
+          if (!p) return (<div className="app-bg" style={{ padding: '40px', textAlign: 'center' }}>Sin presets.</div>);
+          const nivelDe = (c) => { const cap = caps.find((x) => x.id === c); return cap ? cap.nivel : ''; };
+          const etiquetaNivel = (nv) => nv === 'gratis' ? 'GRATIS' : `NIVEL ${nv}`;
+          const g = gridSvg(p, actual);
+          const minB = Math.max(30, p.bpm[0] - 20), maxB = Math.min(240, p.bpm[2] + 30);
+          return (
+            <div className="app-bg" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px 16px 28px', gap: '16px' }}>
+              <div className="fade-in" style={{ width: '100%', maxWidth: '920px', minWidth: 0 }}>
+                <button onClick={() => { detener(); onBack(); }} className="btn btn-ghost" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '9px 14px', borderRadius: '12px', fontSize: '13px', fontWeight: 700, marginBottom: '14px' }}>
+                  <IcoBack /> Menú
+                </button>
+                <div style={{ textAlign: 'center', marginBottom: '18px' }}>
+                  <div className="badge-soft" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 14px', borderRadius: '999px', fontSize: '12px', fontWeight: 700, marginBottom: '12px' }}>
+                    <IcoGuitar size={14} /> RITMOS DEL MÉTODO
+                  </div>
+                  <h1 style={{ fontSize: '34px', fontWeight: 800, lineHeight: 1.08, margin: '0 0 6px', background: 'linear-gradient(135deg,#ffd7bf,#e9c46a)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                    Rasgueos en la guitarra
+                  </h1>
+                  <p style={{ color: 'var(--muted)', fontSize: '14px', margin: 0 }}>Los mismos patrones del libro, con el mismo número, para tocarlos con metrónomo.</p>
+                </div>
+
+                <div id="preset-player" className="glass" style={{ borderRadius: '22px', padding: '18px', marginBottom: '18px', scrollMarginTop: '12px', minWidth: 0, overflow: 'hidden' }}>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', flexWrap: 'wrap', marginBottom: '10px' }}>
+                    <span style={{ background: '#d9480f', color: '#fff', fontWeight: 800, fontSize: '12px', letterSpacing: '.08em', borderRadius: '6px', padding: '3px 8px' }}>{p.id}</span>
+                    <span className="eyebrow">{p.genero}</span>
+                    <span style={{ fontFamily: 'Sora,Inter', fontSize: '22px', fontWeight: 800 }}>{p.nombre}</span>
+                    <span style={{ marginLeft: 'auto', color: 'var(--muted)', fontSize: '13px', whiteSpace: 'nowrap' }}>{p.compas}{p.swing ? ' · swing' : ''} · tempo {p.bpm[0]} a {p.bpm[2]}</span>
+                  </div>
+                  <div style={{ background: '#fff', borderRadius: '14px', padding: '12px 10px 6px', overflowX: 'auto', position: 'relative', maxWidth: '100%', WebkitOverflowScrolling: 'touch' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '0 6px 4px', color: '#141b2b', fontFamily: 'Sora,Inter', fontWeight: 800, fontSize: '18px' }}>
+                      <span>{p.acordes[acordeIdx % p.acordes.length]}</span>
+                      {cuenta > 0 && <span style={{ color: '#d9480f', fontSize: '22px' }}>{cuenta}</span>}
+                    </div>
+                    <div style={{ width: `${Math.round(g.ancho)}px`, margin: '0 auto' }} dangerouslySetInnerHTML={{ __html: g.svg }} />
+                  </div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '10px', marginTop: '14px' }}>
+                    <button onClick={() => (playing ? detener() : tocar())} className={`btn ${playing ? 'btn-ghost' : 'btn-grad'}`}
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '12px 20px', borderRadius: '14px', fontWeight: 800, fontSize: '15px' }}>
+                      {playing ? (<><IcoStop /> Detener</>) : (<><IcoPlay /> Tocar</>)}
+                    </button>
+                    <button onClick={() => setBpm((b) => Math.max(minB, b - 4))} className="chip" style={{ padding: '10px 12px', borderRadius: '12px', fontWeight: 800 }}>−4</button>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: '1 1 160px', minWidth: '150px' }}>
+                      <input type="range" min={minB} max={maxB} value={bpm} onChange={(e) => setBpm(parseInt(e.target.value, 10))} style={{ flex: 1 }} aria-label="Tempo" />
+                      <span style={{ fontWeight: 800, minWidth: '64px', textAlign: 'right' }}>{bpm} <span style={{ color: 'var(--muted)', fontSize: '12px' }}>BPM</span></span>
+                    </div>
+                    <button onClick={() => setBpm((b) => Math.min(maxB, b + 4))} className="chip" style={{ padding: '10px 12px', borderRadius: '12px', fontWeight: 800 }}>+4</button>
+                  </div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '10px' }}>
+                    <button onClick={() => setConClick((v) => !v)} className={`chip ${conClick ? 'chip-active' : ''}`} style={{ padding: '8px 12px', borderRadius: '10px', fontSize: '13px', fontWeight: 700 }}>Metrónomo {conClick ? 'sí' : 'no'}</button>
+                    <button onClick={() => setConGuitarra((v) => !v)} className={`chip ${conGuitarra ? 'chip-active' : ''}`} style={{ padding: '8px 12px', borderRadius: '10px', fontSize: '13px', fontWeight: 700 }}>Guitarra {conGuitarra ? 'sí' : 'no'}</button>
+                    {[p.bpm[0], p.bpm[1], p.bpm[2]].map((v, i) => (
+                      <button key={i} onClick={() => setBpm(v)} className="chip" style={{ padding: '8px 12px', borderRadius: '10px', fontSize: '13px', fontWeight: 700 }}>{['Lento', 'Medio', 'Meta'][i]} · {v}</button>
+                    ))}
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(240px,1fr))', gap: '14px', marginTop: '14px', fontSize: '14px', lineHeight: 1.5 }}>
+                    <div>
+                      {p.texto.map((t, i) => (<p key={i} style={{ margin: '0 0 6px', color: 'var(--txt)' }}>{t}</p>))}
+                      <p style={{ margin: '6px 0 0', color: '#ffd7bf', borderLeft: '3px solid #d9480f', paddingLeft: '8px' }}><b>Cuidar:</b> {p.cuidar}</p>
+                    </div>
+                    <div>
+                      <div className="eyebrow" style={{ marginBottom: '6px' }}>Acordes para practicar</div>
+                      <p style={{ margin: '0 0 10px', fontWeight: 700 }}>{p.acordes.join(' – ')}</p>
+                      {p.canciones.length > 0 && (<>
+                        <div className="eyebrow" style={{ marginBottom: '6px' }}>Dónde suena</div>
+                        {p.canciones.map((c, i) => (<p key={i} style={{ margin: '0 0 3px' }}><b>{c.c}</b> <span style={{ color: 'var(--muted)' }}>· {c.a}</span></p>))}
+                      </>)}
+                    </div>
+                  </div>
+                </div>
+
+                {caps.map((c) => {
+                  const lista = pats.filter((x) => x.cap === c.id);
+                  if (!lista.length) return null;
+                  return (
+                    <div key={c.id} style={{ marginBottom: '14px' }}>
+                      <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', margin: '0 4px 8px' }}>
+                        <span style={{ fontFamily: 'Sora,Inter', fontWeight: 800, fontSize: '20px', color: '#e9c46a' }}>{c.id}</span>
+                        <span style={{ fontWeight: 800 }}>{c.titulo}</span>
+                        <span className="eyebrow" style={{ marginLeft: 'auto' }}>{etiquetaNivel(nivelDe(c.id))}</span>
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(210px,1fr))', gap: '8px' }}>
+                        {lista.map((x) => (
+                          <button key={x.id} onClick={() => cambiar(x.id)} className={`chip ${x.id === p.id ? 'chip-active' : ''}`}
+                            style={{ textAlign: 'left', padding: '10px 12px', borderRadius: '14px' }}>
+                            <span style={{ display: 'block', fontSize: '11px', fontWeight: 800, letterSpacing: '.08em', color: '#e9c46a' }}>{x.id} · {x.genero.toUpperCase()}</span>
+                            <span style={{ display: 'block', fontWeight: 700, fontSize: '14px', color: 'var(--txt)' }}>{x.nombre}</span>
+                            <span style={{ display: 'block', fontSize: '12px', color: 'var(--muted)' }}>{x.compas}{x.swing ? ' swing' : ''} · {x.bpm[0]}–{x.bpm[2]} BPM</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <Footer />
+            </div>
+          );
+        };
+
+        /* PRESETS-JSX:FIN */
         const StrummingPatternApp = () => {
-          const [screen, setScreen] = useState(0); // 0 = menú de niveles, 1 = configuración, 2 = ejercicio
+          // 0 = menú de niveles, 1 = configuración, 2 = ejercicio, 3 = ritmos del método (presets).
+          // Un enlace con ?preset=ID (los del PDF del método) abre directo en la pantalla 3. [2026-10-04]
+          const [screen, setScreen] = useState(() => {
+            try { return new URLSearchParams(location.search).get('preset') ? 3 : 0; } catch (e) { return 0; }
+          });
           const [level, setLevel] = useState(1);    // 1 = rasgueo básico (corcheas), 2 = funk (16vos)
           const [config, setConfig] = useState({
             title: '',
@@ -1221,6 +1573,9 @@
             </button>
           );
 
+          /* ============ PANTALLA 3: RITMOS DEL MÉTODO ============ */
+          if (screen === 3) return <PresetsLibrary onBack={() => setScreen(0)} />;
+
           /* ============ PANTALLA 0: SELECCIÓN DE NIVEL ============ */
           if (screen === 0) {
             const chooseLevel = (lvl) => {
@@ -1256,7 +1611,7 @@
                 <div className="fade-in" style={{ width:'100%', maxWidth:'520px' }}>
                   <div style={{ textAlign:'center', marginBottom:'30px' }}>
                     <div className="badge-soft" style={{ display:'inline-flex', alignItems:'center', gap:'8px', padding:'6px 14px', borderRadius:'999px', fontSize:'12px', fontWeight:700, marginBottom:'18px' }}>
-                      <IcoGuitar size={14}/> ESTUDIO RÍTMICO
+                      <IcoGuitar size={14}/> RASGUEO·LAB
                     </div>
                     <h1 style={{ fontSize:'42px', fontWeight:800, lineHeight:1.05, margin:'0 0 8px',
                       background:'linear-gradient(135deg,#bcd0ff,#cdb6ff)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent' }}>
@@ -1269,6 +1624,16 @@
                       desc="Patrones de rasgueo en corcheas. Construye, escucha y exporta tus ejercicios. Ideal para empezar." />
                     <LevelCard lvl={2} tag="NIVEL 2 · FUNK" title="Funk en 16vos" accent="linear-gradient(180deg,#e9c46a,#e07f2a)"
                       desc="Semicorcheas, groove y conteo silábico (to-ma-te-lo). Ejercicios de un compás para afinar tu mano derecha." />
+                    <button onClick={() => setScreen(3)} className="glass level-card"
+                      style={{ textAlign:'left', padding:'26px', borderRadius:'22px', cursor:'pointer', width:'100%', position:'relative', overflow:'hidden' }}>
+                      <div style={{ position:'absolute', top:0, left:0, width:'5px', height:'100%', background:'linear-gradient(180deg,#ff9a62,#d9480f)' }}></div>
+                      <div className="badge-soft" style={{ display:'inline-flex', alignItems:'center', gap:'7px', padding:'5px 12px', borderRadius:'999px', fontSize:'11px', fontWeight:700, marginBottom:'12px' }}>
+                        RITMOS DEL MÉTODO
+                      </div>
+                      <div style={{ fontFamily:'Sora,Inter', fontSize:'24px', fontWeight:800, color:'var(--txt)', marginBottom:'6px' }}>Pop, rock, cumbia, bossa, funk…</div>
+                      <div style={{ color:'var(--muted)', fontSize:'14px', lineHeight:1.5 }}>Los {PRESETS.patrones.length} patrones del Método de rasgueos, con el mismo número del libro. Con metrónomo, sonido de guitarra y tempo ajustable.</div>
+                      <div style={{ marginTop:'16px', display:'inline-flex', alignItems:'center', gap:'8px', color:'#bcd0ff', fontWeight:700, fontSize:'14px' }}>Entrar →</div>
+                    </button>
                   </div>
                 </div>
                 <Footer />
